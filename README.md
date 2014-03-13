@@ -8,7 +8,9 @@ Features
 
 * Simple and effective support for backward compatibility when adding new serialized object members.
 
-* Supports a variety of serialization formats, including JSON, XML, Bencode, and PBON, with a single API.
+* Stream-based API doesn't require the entire object to reside in memory.
+
+* Supports a variety of serialization formats, including [JSON](http://json.org), [XML](http://en.wikipedia.org/wiki/XML), [Bencode](http://en.wikipedia.org/wiki/Bencode), and [PBON](http://pbon.info), with a single API.
 
 * Available as a Portable Class Library, so it can be used with Mono, Xamarin.iOS, and Xamarin.Android as a cross-platform solution.
 
