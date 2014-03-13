@@ -1,19 +1,24 @@
 Serialize.NET
 =============
 
-A cross-platform library for efficiently serializing basic .NET types into JSON, XML, Bencode, and PBON (portable binary) formats.
+A cross-platform library for efficiently serializing objects into a variety of formats.
 
-About
-=====
+Features
+========
 
-Serialize.NET provides a simple .NET interface to serialize and deserialize objects using a variety of wire formats.
+* Simple and effective support for backward compatibility when adding new serialized object members.
 
-It is implemented as a Portable Class Library, so it can be used with Mono, Xamarin.iOS, and Xamarin.Android as a cross-platform solution.
+* Supports a variety of serialization formats, including JSON, XML, Bencode, and PBON, with a single API.
 
-The serialization formats support transmitting objects between platforms (regardless of processor endianness, for example).
+* Available as a Portable Class Library, so it can be used with Mono, Xamarin.iOS, and Xamarin.Android as a cross-platform solution.
 
-The interfaces are intentionally primitive and are suitable for extending into higher-level abstractions, for example, a messaging protocol.
+* Supports transmitting objects between platforms (regardless of processor endianness, for example).
 
-The serialization interfaces also support inspection of the underlying byte stream, which enables scenarios such as digital signing.
+* Supports inspection of the underlying byte stream, which enables scenarios such as digital signing.
 
-See the wiki for more details.
+* Suitable for extending into higher-level abstractions, for example, a messaging protocol.
+
+For more information
+====================
+
+See the wiki for details.
