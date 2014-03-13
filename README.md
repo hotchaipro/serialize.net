@@ -21,4 +21,4 @@ Features
 For more information
 ====================
 
-See the wiki for details.
+See the project wiki for details.
