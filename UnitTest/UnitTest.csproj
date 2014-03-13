@@ -55,8 +55,9 @@
     <Compile Include="ComplexObject.cs" />
     <Compile Include="EmptyObject.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="JsonNetPerformanceComparisonTests.cs" />
     <Compile Include="ObjectReaderWriterFactory.cs" />
-    <Compile Include="PerformanceComparisonTests.cs" />
+    <Compile Include="ProtoBufNetComparisonTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SerializerTests.cs" />
     <Compile Include="SimpleObject.cs" />

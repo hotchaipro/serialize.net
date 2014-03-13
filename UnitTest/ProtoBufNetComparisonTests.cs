@@ -23,9 +23,9 @@ using System.IO;
 namespace HotChai.Serialization.UnitTest
 {
     [TestClass]
-    public sealed class PerformanceComparisonTests
+    public sealed class ProtoBufNetComparisonTests
     {
-        public sealed class PerfTestObject
+        public sealed class ProtoBufNetTestObject
         {
             private const int StringQuotaInBytes = 1024;
 
@@ -36,7 +36,7 @@ namespace HotChai.Serialization.UnitTest
 
             public static void WriteTo(
                 IObjectWriter writer,
-                PerfTestObject obj)
+                ProtoBufNetTestObject obj)
             {
                 if (null == obj)
                 {
@@ -65,14 +65,14 @@ namespace HotChai.Serialization.UnitTest
                 writer.WriteEndObject();
             }
 
-            public static PerfTestObject ReadFrom(
+            public static ProtoBufNetTestObject ReadFrom(
                 IObjectReader reader)
             {
-                PerfTestObject obj = null;
+                ProtoBufNetTestObject obj = null;
 
                 if (reader.ReadStartObject())
                 {
-                    obj = new PerfTestObject();
+                    obj = new ProtoBufNetTestObject();
 
                     int memberKey;
 
@@ -105,7 +105,7 @@ namespace HotChai.Serialization.UnitTest
             }
 
             public void VerifyIsEqual(
-                PerfTestObject other)
+                ProtoBufNetTestObject other)
             {
                 if (this.Foo != other.Foo)
                 {
@@ -131,17 +131,17 @@ namespace HotChai.Serialization.UnitTest
 
         [TestMethod]
         [TestCategory("Performance")]
-        public void ComparablePerformance()
+        public void ProtoBufNetTest()
         {
             const int WarmupIterations = 10;
-            const int Iterations = 100000;
+            const int Iterations = 1000000;
 
             Stopwatch writeStopWatch = new Stopwatch();
 
             byte[] buffer = new byte[128 * 1024];
             byte[] serialized;
 
-            PerfTestObject writeObject = new PerfTestObject()
+            ProtoBufNetTestObject writeObject = new ProtoBufNetTestObject()
             {
                 Foo = 12,         // 01-01-0C
                 Bar = "bar",      // 02-03-62-61-72
@@ -163,7 +163,7 @@ namespace HotChai.Serialization.UnitTest
                 {
                     stream.SetLength(0);
                     writer = factory.CreateWriter(stream);
-                    PerfTestObject.WriteTo(writer, writeObject);
+                    ProtoBufNetTestObject.WriteTo(writer, writeObject);
                     writer.Flush();
                 }
 
@@ -173,7 +173,7 @@ namespace HotChai.Serialization.UnitTest
 
                 for (int i = 0; i < Iterations; i += 1)
                 {
-                    PerfTestObject.WriteTo(writer, writeObject);
+                    ProtoBufNetTestObject.WriteTo(writer, writeObject);
                     writer.Flush();
                 }
 
@@ -190,7 +190,7 @@ namespace HotChai.Serialization.UnitTest
 
             Stopwatch readStopWatch = new Stopwatch();
 
-            PerfTestObject readObject = null;
+            ProtoBufNetTestObject readObject = null;
 
             // Deserialize the test object from a byte array
             using (var stream = new MemoryStream(serialized))
@@ -202,7 +202,7 @@ namespace HotChai.Serialization.UnitTest
                 {
                     stream.Seek(0, SeekOrigin.Begin);
                     reader = factory.CreateReader(stream);
-                    readObject = PerfTestObject.ReadFrom(reader);
+                    readObject = ProtoBufNetTestObject.ReadFrom(reader);
                 }
 
                 readStopWatch.Start();
@@ -211,7 +211,7 @@ namespace HotChai.Serialization.UnitTest
                 {
                     stream.Seek(0, SeekOrigin.Begin);
                     reader = factory.CreateReader(stream);
-                    readObject = PerfTestObject.ReadFrom(reader);
+                    readObject = ProtoBufNetTestObject.ReadFrom(reader);
                 }
 
                 readStopWatch.Stop();
