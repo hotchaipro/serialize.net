@@ -59,9 +59,8 @@ namespace HotChai.Serialization.Bencoding
 
         public override void WriteStartMember(int memberKey)
         {
-            // NOTE: Bencoding specification requires a string type key value,
-            // so this is an extension of the standard
-            WriteValue(memberKey);
+            // NOTE: Bencoding specification requires a string type key value
+            WriteValue(memberKey.ToString(CultureInfo.InvariantCulture));
         }
 
         public override void WriteEndMember()
@@ -134,16 +133,16 @@ namespace HotChai.Serialization.Bencoding
 
         public override void WriteValue(float value)
         {
-            this._writer.Write(BencodingToken.Float);
-            WriteRaw(value.ToString("R"));
-            this._writer.Write(BencodingToken.EndFloat);
+            // NOTE: Bencoding does not explicitly support floats,
+            // so we encode as a string.
+            WriteValue(value.ToString("R"));
         }
 
         public override void WriteValue(double value)
         {
-            this._writer.Write(BencodingToken.Float);
-            WriteRaw(value.ToString("R"));
-            this._writer.Write(BencodingToken.EndFloat);
+            // NOTE: Bencoding does not explicitly support floats,
+            // so we encode as a string.
+            WriteValue(value.ToString("R"));
         }
 
         public override void WriteValue(byte[] value)

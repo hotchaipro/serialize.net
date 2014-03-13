@@ -29,7 +29,5 @@ namespace HotChai.Serialization.Bencoding
 
         // NOTE: The following are extensions to the bencoding specification
         internal const char Null = 'n';
-        internal const char Float = 'f';
-        internal const char EndFloat = '#';
     }
 }

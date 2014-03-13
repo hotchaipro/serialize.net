@@ -84,10 +84,10 @@ namespace HotChai.Serialization.Bencoding
             }
 
             // Set the current object member key
-            // NOTE: This is a relaxation of the official bencoding 
-            // specification, which allows only string keys in 
-            // dictionary encodings.
-            this.MemberKey = ReadPrimitiveValueAsInt32();
+            // NOTE: The official bencoding specification only allows 
+            // string keys in dictionary encodings.
+            string memberKeyString = ReadPrimitiveValueAsString(15);
+            this.MemberKey = Int32.Parse(memberKeyString);
 
             return true;
         }
@@ -295,52 +295,16 @@ namespace HotChai.Serialization.Bencoding
 
         protected override float ReadPrimitiveValueAsSingle()
         {
-            char token = ReadToken();
-            if (token != BencodingToken.Float)
-            {
-                throw new InvalidOperationException();
-            }
+            string stringValue = ReadPrimitiveValueAsString(15);
 
-            this._string.Length = 0;
-
-            do
-            {
-                token = ReadToken();
-                if (token == BencodingToken.EndFloat)
-                {
-                    break;
-                }
-
-                this._string.Append(token);
-            }
-            while (true);
-
-            return float.Parse(this._string.ToString());
+            return float.Parse(stringValue);
         }
 
         protected override double ReadPrimitiveValueAsDouble()
         {
-            char token = ReadToken();
-            if (token != BencodingToken.Float)
-            {
-                throw new InvalidOperationException();
-            }
+            string stringValue = ReadPrimitiveValueAsString(30);
 
-            this._string.Length = 0;
-
-            do
-            {
-                token = ReadToken();
-                if (token == BencodingToken.EndFloat)
-                {
-                    break;
-                }
-
-                this._string.Append(token);
-            }
-            while (true);
-
-            return double.Parse(this._string.ToString());
+            return double.Parse(stringValue);
         }
 
         protected override byte[] ReadPrimitiveValueAsBytes(
@@ -422,10 +386,6 @@ namespace HotChai.Serialization.Bencoding
             {
                 SkipInt();
             }
-            else if (token == BencodingToken.Float)
-            {
-                SkipFloat();
-            }
             else if (char.IsDigit(token))
             {
                 // TODO: Skip bytes with a fixed buffer size
@@ -449,25 +409,6 @@ namespace HotChai.Serialization.Bencoding
             {
                 token = ReadToken();
                 if (token == BencodingToken.End)
-                {
-                    break;
-                }
-            }
-            while (true);
-        }
-
-        private void SkipFloat()
-        {
-            char token = ReadToken();
-            if (token != BencodingToken.Float)
-            {
-                throw new InvalidOperationException();
-            }
-
-            do
-            {
-                token = ReadToken();
-                if (token == BencodingToken.EndFloat)
                 {
                     break;
                 }
