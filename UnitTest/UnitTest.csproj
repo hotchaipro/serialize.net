@@ -54,6 +54,7 @@
   <ItemGroup>
     <Compile Include="ComplexObject.cs" />
     <Compile Include="EmptyObject.cs" />
+    <Compile Include="EncodingDemoTests.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="JsonNetPerformanceComparisonTests.cs" />
     <Compile Include="ObjectReaderWriterFactory.cs" />
