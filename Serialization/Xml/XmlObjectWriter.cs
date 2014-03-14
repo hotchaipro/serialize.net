@@ -18,6 +18,7 @@
 using System;
 using System.Globalization;
 using System.IO;
+using System.Text;
 using System.Xml;
 
 namespace HotChai.Serialization.Xml
@@ -42,6 +43,7 @@ namespace HotChai.Serialization.Xml
                 CheckCharacters = false,
                 OmitXmlDeclaration = true,
                 NewLineHandling = NewLineHandling.Entitize,
+                Encoding = new UTF8Encoding(false),
             });
         }
 
