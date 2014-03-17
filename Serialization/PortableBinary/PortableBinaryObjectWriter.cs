@@ -117,7 +117,7 @@ namespace HotChai.Serialization.PortableBinary
                 value = ~value;
             }
 
-            // Remainder of value is the base 256 encoded absolute value
+            // Remainder of value is the base 256 encoded absolute value (big-endian)
 
             if (value <= 0x7f)
             {
@@ -150,7 +150,7 @@ namespace HotChai.Serialization.PortableBinary
         public override void WriteValue(
             uint value)
         {
-            // Base 256 encoded value
+            // Base 256 encoded value (big-endian)
 
             if (value <= 0xff)
             {
@@ -192,7 +192,7 @@ namespace HotChai.Serialization.PortableBinary
                 value = ~value;
             }
 
-            // Remainder of value is the base 256 encoded absolute value
+            // Remainder of value is the base 256 encoded absolute value (big-endian)
 
             if (value <= 0x7f)
             {
@@ -267,7 +267,7 @@ namespace HotChai.Serialization.PortableBinary
         public override void WriteValue(
             ulong value)
         {
-            // Base 256 encoded value
+            // Base 256 encoded value (big-endian)
 
             if (value <= 0xff)
             {
@@ -421,45 +421,60 @@ namespace HotChai.Serialization.PortableBinary
             WritePackedInt(length);
         }
 
+        /// <summary>
+        /// Big-endian variable-length quantity (VLQ) encoding
+        /// </summary>
+        /// <remarks>
+        /// See http://en.wikipedia.org/wiki/Variable-length_quantity.
+        /// </remarks>
         private void WritePackedInt(
             int value)
         {
-            byte byteValue = 0;
+            byte sign = 0;
 
             // Bit 6 contains the sign
             if (value < 0)
             {
                 // Set the sign bit
-                byteValue = 0x40;
+                sign = 0x40;
 
                 // Negate the value (so it is non-negative)
                 value = ~value;
             }
 
-            // Bits 0-5 contain the 6 least significant bits of the absolute value
-            byteValue |= (byte)(value & 0x3F);
+            // Remainder of value is the base 128 encoded absolute value (big-endian),
+            // with the MSB set as a continuation bit.
 
-            // Shift away the 6 bits just captured
-            value = value >> 6;
-
-            // Check for another byte to write
-            while (value != 0)
+            if (value <= 0x3f)
             {
-                // Set the continuation bit (7)
-                byteValue |= 0x80;
-
-                // Write the current byte value
-                this._writer.Write((byte)byteValue);
-
-                // Get the next 7 least significant bits of the value
-                byteValue = (byte)(value & 0x7F);
-
-                // Shift away the 7 bits just captured
-                value = value >> 7;
+                this._writer.Write((byte)(value | sign));
             }
-
-            // Write the final byte
-            this._writer.Write(byteValue);
+            else if (value <= 0x1fff)
+            {
+                this._writer.Write((byte)(0x80 | (value >> 7) | sign));
+                this._writer.Write((byte)(value & 0x7f));
+            }
+            else if (value <= 0xfffff)
+            {
+                this._writer.Write((byte)(0x80 | (value >> 14) | sign));
+                this._writer.Write((byte)(0x80 | value >> 7));
+                this._writer.Write((byte)(value & 0x7f));
+            }
+            else if (value <= 0x7ffffff)
+            {
+                this._writer.Write((byte)(0x80 | (value >> 21) | sign));
+                this._writer.Write((byte)(0x80 | value >> 14));
+                this._writer.Write((byte)(0x80 | value >> 7));
+                this._writer.Write((byte)(value & 0x7f));
+            }
+            else
+            {
+                this._writer.Write((byte)(0x80 | (value >> 28) | sign));
+                this._writer.Write((byte)(0x80 | value >> 21));
+                this._writer.Write((byte)(0x80 | value >> 14));
+                this._writer.Write((byte)(0x80 | value >> 7));
+                this._writer.Write((byte)(value & 0x7f));
+            }
         }
     }
 }

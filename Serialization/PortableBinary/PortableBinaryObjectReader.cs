@@ -453,60 +453,6 @@ namespace HotChai.Serialization.PortableBinary
             return true;
         }
 
-        private int PeekPackedInt()
-        {
-            if (!this._peeked)
-            {
-                this._peekedValue = ReadPackedInt();
-                this._peeked = true;
-            }
-
-            return this._peekedValue;
-        }
-
-        private int ReadPackedInt()
-        {
-            if (this._peeked)
-            {
-                this._peeked = false;
-
-                return this._peekedValue;
-            }
-
-            // Read the first byte
-            byte byteValue = this._reader.ReadByte();
-
-            // Bit 6 contains the sign
-            bool isNegative = ((byteValue & 0x40) != 0);
-
-            // Bits 0-5 contain the least significant 6 bits of the value
-            int value = byteValue & 0x3f;
-
-            // Count 6 bits read
-            int bitsRead = 6;
-
-            // Check the continuation bit (bit 7)
-            while ((byteValue & 0x80) != 0)
-            {
-                // Read the next byte
-                byteValue = this._reader.ReadByte();
-
-                // Bits 0-6 contain the next 7 least significant bits of the value
-                value |= ((byteValue & 0x7f) << bitsRead);
-
-                // Count another 7 bits read
-                bitsRead += 7;
-            }
-
-            // Negate the final value if necessary
-            if (isNegative)
-            {
-                value = ~value;
-            }
-
-            return value;
-        }
-
         private int ReadPrimitiveLength(
             int quota)
         {
@@ -548,6 +494,74 @@ namespace HotChai.Serialization.PortableBinary
             }
 
             return length;
+        }
+
+        private int PeekPackedInt()
+        {
+            if (!this._peeked)
+            {
+                this._peekedValue = ReadPackedInt();
+                this._peeked = true;
+            }
+
+            return this._peekedValue;
+        }
+
+        /// <summary>
+        /// Big-endian variable-length quantity (VLQ) encoding
+        /// </summary>
+        /// <remarks>
+        /// See http://en.wikipedia.org/wiki/Variable-length_quantity.
+        /// </remarks>
+        private int ReadPackedInt()
+        {
+            if (this._peeked)
+            {
+                this._peeked = false;
+
+                return this._peekedValue;
+            }
+
+            // Read the first byte
+            int readByte = this._reader.ReadByte();
+            if (readByte == -1)
+            {
+                throw new InvalidOperationException();
+            }
+
+            byte byteValue = (byte)readByte;
+
+            // Bit 6 contains the sign
+            bool isNegative = ((byteValue & 0x40) != 0);
+
+            // Bits 0-5 contain the most significant 6 bits of the value
+            int value = byteValue & 0x3f;
+
+            // Remainder of value is the base 128 encoded absolute value (big-endian),
+            // with the MSB set as a continuation bit.
+
+            // Check the continuation bit (bit 7)
+            while ((byteValue & 0x80) != 0)
+            {
+                // Read the next byte
+                readByte = this._reader.ReadByte();
+                if (readByte == -1)
+                {
+                    throw new InvalidOperationException();
+                }
+
+                byteValue = (byte)readByte;
+
+                // Bits 0-6 contain the next 7 least significant bits of the value
+                value = (value << 7) | (byteValue & 0x7f);
+            }
+
+            if (isNegative)
+            {
+                value = ~value;
+            }
+
+            return value;
         }
     }
 }
