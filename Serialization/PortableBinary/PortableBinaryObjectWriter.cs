@@ -51,12 +51,12 @@ namespace HotChai.Serialization.PortableBinary
             }
         }
 
-        public override void WriteStartObject()
+        protected override void WriteStartObjectToken()
         {
             WriteToken(PortableBinaryToken.StartObjectToken);
         }
 
-        public override void WriteStartMember(
+        protected override void WriteStartMemberToken(
             int memberKey)
         {
             if (memberKey <= 0)
@@ -67,32 +67,32 @@ namespace HotChai.Serialization.PortableBinary
             WritePackedInt(memberKey);
         }
 
-        public override void WriteEndMember()
+        protected override void WriteEndMemberToken()
         {
             // No end member in this encoding
         }
 
-        public override void WriteEndObject()
+        protected override void WriteEndObjectToken()
         {
             WriteToken(PortableBinaryToken.EndObjectToken);
         }
 
-        public override void WriteStartArray()
+        protected override void WriteStartArrayToken()
         {
             WriteToken(PortableBinaryToken.StartArrayToken);
         }
 
-        public override void WriteEndArray()
+        protected override void WriteEndArrayToken()
         {
             WriteToken(PortableBinaryToken.EndArrayToken);
         }
 
-        public override void WriteNullValue()
+        protected override void WritePrimitiveNullValue()
         {
             WriteToken(PortableBinaryToken.NullValueToken);
         }
 
-        public override void WriteValue(
+        protected override void WritePrimitiveValue(
             bool value)
         {
             if (value)
@@ -105,7 +105,7 @@ namespace HotChai.Serialization.PortableBinary
             }
         }
 
-        public override void WriteValue(
+        protected override void WritePrimitiveValue(
             int value)
         {
             // The most significant bit is used for the sign
@@ -147,7 +147,7 @@ namespace HotChai.Serialization.PortableBinary
             }
         }
 
-        public override void WriteValue(
+        protected override void WritePrimitiveValue(
             uint value)
         {
             // Base 256 encoded value (big-endian)
@@ -180,7 +180,7 @@ namespace HotChai.Serialization.PortableBinary
             }
         }
 
-        public override void WriteValue(
+        protected override void WritePrimitiveValue(
             long value)
         {
             // The most significant bit is used for the sign
@@ -264,7 +264,7 @@ namespace HotChai.Serialization.PortableBinary
             }
         }
 
-        public override void WriteValue(
+        protected override void WritePrimitiveValue(
             ulong value)
         {
             // Base 256 encoded value (big-endian)
@@ -339,7 +339,7 @@ namespace HotChai.Serialization.PortableBinary
             }
         }
 
-        public override void WriteValue(
+        protected override void WritePrimitiveValue(
             float value)
         {
             byte[] bytes = BitConverter.GetBytes(value);
@@ -352,7 +352,7 @@ namespace HotChai.Serialization.PortableBinary
             this._writer.Write(bytes, 0, bytes.Length);
         }
 
-        public override void WriteValue(
+        protected override void WritePrimitiveValue(
             double value)
         {
             byte[] bytes = BitConverter.GetBytes(value);
@@ -365,7 +365,7 @@ namespace HotChai.Serialization.PortableBinary
             this._writer.Write(bytes, 0, bytes.Length);
         }
 
-        public override void WriteValue(
+        protected override void WritePrimitiveValue(
             byte[] value)
         {
             if (null == value)
@@ -379,7 +379,7 @@ namespace HotChai.Serialization.PortableBinary
             }
         }
 
-        public override void WriteValue(
+        protected override void WritePrimitiveValue(
             string value)
         {
             if (null == value)

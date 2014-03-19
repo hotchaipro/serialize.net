@@ -25,18 +25,9 @@ namespace HotChai.Serialization.Json
 {
     public sealed class JsonObjectWriter : ObjectWriter
     {
-        private enum WriterState
-        {
-            None,
-            Object,
-            ObjectMember,
-            Array,
-            ArrayValue,
-        }
-
         private InspectorStream _stream;
         private BinaryWriter _writer;
-        private StateManager<WriterState> _state;
+        List<char> _surrogates = new List<char>();
 
         public JsonObjectWriter(
             Stream stream)
@@ -48,8 +39,6 @@ namespace HotChai.Serialization.Json
 
             this._stream = new InspectorStream(stream);
             this._writer = new BinaryWriter(this._stream, Encoding.UTF8);
-            this._state = new StateManager<WriterState>();
-            this._state.Push(WriterState.None);
         }
 
         public override ISerializationInspector Inspector
@@ -65,80 +54,47 @@ namespace HotChai.Serialization.Json
             }
         }
 
-        public override void WriteStartObject()
+        protected override void WriteStartObjectToken()
         {
-            WriteArrayValueSeparator();
-
-            this._state.Push(WriterState.Object);
-
             Write('{');
         }
 
-        public override void WriteStartMember(
+        protected override void WriteStartMemberToken(
             int memberKey)
         {
-            if (this._state.Value == WriterState.Object)
-            {
-                this._state.Set(WriterState.ObjectMember);
-            }
-            else if (this._state.Value == WriterState.ObjectMember)
-            {
-                WriteMemberSeparator();
-            }
-            else
-            {
-                throw new InvalidOperationException();
-            }
-
             Write('"');
             Write(memberKey.ToString(CultureInfo.InvariantCulture));
             Write('"');
             Write(':');
         }
 
-        public override void WriteEndMember()
+        protected override void WriteEndMemberToken()
         {
-            if (this._state.Value != WriterState.ObjectMember)
-            {
-                throw new InvalidOperationException();
-            }
         }
 
-        public override void WriteEndObject()
+        protected override void WriteEndObjectToken()
         {
             Write(JsonToken.EndObject);
-
-            this._state.Pop();
         }
 
-        public override void WriteStartArray()
+        protected override void WriteStartArrayToken()
         {
-            WriteArrayValueSeparator();
-
             Write(JsonToken.StartArray);
-
-            this._state.Push(WriterState.Array);
         }
 
-        public override void WriteEndArray()
+        protected override void WriteEndArrayToken()
         {
             Write(JsonToken.EndArray);
-
-            this._state.Pop();
         }
 
-        public override void WriteNullValue()
+        protected override void WritePrimitiveNullValue()
         {
-            WriteArrayValueSeparator();
-
             Write(JsonToken.Null);
         }
 
-        public override void WriteValue(
+        protected override void WritePrimitiveValue(
             bool value)
         {
-            WriteArrayValueSeparator();
-
             if (value)
             {
                 Write(JsonToken.True);
@@ -149,59 +105,45 @@ namespace HotChai.Serialization.Json
             }
         }
 
-        public override void WriteValue(
+        protected override void WritePrimitiveValue(
             int value)
         {
-            WriteArrayValueSeparator();
-
             Write(value.ToString(CultureInfo.InvariantCulture));
         }
 
-        public override void WriteValue(
+        protected override void WritePrimitiveValue(
             uint value)
         {
-            WriteArrayValueSeparator();
-
             Write(value.ToString(CultureInfo.InvariantCulture));
         }
 
-        public override void WriteValue(
+        protected override void WritePrimitiveValue(
             long value)
         {
-            WriteArrayValueSeparator();
-
             Write(value.ToString(CultureInfo.InvariantCulture));
         }
 
-        public override void WriteValue(
+        protected override void WritePrimitiveValue(
             ulong value)
         {
-            WriteArrayValueSeparator();
-
             Write(value.ToString(CultureInfo.InvariantCulture));
         }
 
-        public override void WriteValue(
+        protected override void WritePrimitiveValue(
             float value)
         {
-            WriteArrayValueSeparator();
-
             Write(value.ToString("R"));
         }
 
-        public override void WriteValue(
+        protected override void WritePrimitiveValue(
             double value)
         {
-            WriteArrayValueSeparator();
-
             Write(value.ToString("R"));
         }
 
-        public override void WriteValue(
+        protected override void WritePrimitiveValue(
             byte[] value)
         {
-            WriteArrayValueSeparator();
-
             if (null == value)
             {
                 Write(JsonToken.Null);
@@ -217,13 +159,9 @@ namespace HotChai.Serialization.Json
             }
         }
 
-        List<char> _surrogates = new List<char>();
-
-        public override void WriteValue(
+        protected override void WritePrimitiveValue(
             string value)
         {
-            WriteArrayValueSeparator();
-
             if (null == value)
             {
                 Write(JsonToken.Null);
@@ -301,19 +239,12 @@ namespace HotChai.Serialization.Json
             this._writer.Flush();
         }
 
-        private void WriteArrayValueSeparator()
+        protected override void WriteArrayValueSeparator()
         {
-            if (this._state.Value == WriterState.ArrayValue)
-            {
-                Write(',');
-            }
-            else if (this._state.Value == WriterState.Array)
-            {
-                this._state.Set(WriterState.ArrayValue);
-            }
+            Write(',');
         }
 
-        private void WriteMemberSeparator()
+        protected override void WriteMemberSeparator()
         {
             Write(',');
         }

@@ -52,42 +52,42 @@ namespace HotChai.Serialization.Bencoding
             }
         }
 
-        public override void WriteStartObject()
+        protected override void WriteStartObjectToken()
         {
             this._writer.Write(BencodingToken.Dictionary);
         }
 
-        public override void WriteStartMember(int memberKey)
+        protected override void WriteStartMemberToken(int memberKey)
         {
             // NOTE: Bencoding specification requires a string type key value
-            WriteValue(memberKey.ToString(CultureInfo.InvariantCulture));
+            WritePrimitiveValue(memberKey.ToString(CultureInfo.InvariantCulture));
         }
 
-        public override void WriteEndMember()
+        protected override void WriteEndMemberToken()
         {
         }
 
-        public override void WriteEndObject()
+        protected override void WriteEndObjectToken()
         {
             this._writer.Write(BencodingToken.End);
         }
 
-        public override void WriteStartArray()
+        protected override void WriteStartArrayToken()
         {
             this._writer.Write(BencodingToken.List);
         }
 
-        public override void WriteEndArray()
+        protected override void WriteEndArrayToken()
         {
             this._writer.Write(BencodingToken.End);
         }
 
-        public override void WriteNullValue()
+        protected override void WritePrimitiveNullValue()
         {
             this._writer.Write(BencodingToken.Null);
         }
 
-        public override void WriteValue(bool value)
+        protected override void WritePrimitiveValue(bool value)
         {
             this._writer.Write(BencodingToken.Integer);
 
@@ -103,53 +103,53 @@ namespace HotChai.Serialization.Bencoding
             this._writer.Write(BencodingToken.End);
         }
 
-        public override void WriteValue(int value)
+        protected override void WritePrimitiveValue(int value)
         {
             this._writer.Write(BencodingToken.Integer);
             WriteRaw(value.ToString(CultureInfo.InvariantCulture));
             this._writer.Write(BencodingToken.End);
         }
 
-        public override void WriteValue(uint value)
+        protected override void WritePrimitiveValue(uint value)
         {
             this._writer.Write(BencodingToken.Integer);
             WriteRaw(value.ToString(CultureInfo.InvariantCulture));
             this._writer.Write(BencodingToken.End);
         }
 
-        public override void WriteValue(long value)
+        protected override void WritePrimitiveValue(long value)
         {
             this._writer.Write(BencodingToken.Integer);
             WriteRaw(value.ToString(CultureInfo.InvariantCulture));
             this._writer.Write(BencodingToken.End);
         }
 
-        public override void WriteValue(ulong value)
+        protected override void WritePrimitiveValue(ulong value)
         {
             this._writer.Write(BencodingToken.Integer);
             WriteRaw(value.ToString(CultureInfo.InvariantCulture));
             this._writer.Write(BencodingToken.End);
         }
 
-        public override void WriteValue(float value)
+        protected override void WritePrimitiveValue(float value)
         {
             // NOTE: Bencoding does not explicitly support floats,
             // so we encode as a string.
-            WriteValue(value.ToString("R"));
+            WritePrimitiveValue(value.ToString("R"));
         }
 
-        public override void WriteValue(double value)
+        protected override void WritePrimitiveValue(double value)
         {
             // NOTE: Bencoding does not explicitly support floats,
             // so we encode as a string.
-            WriteValue(value.ToString("R"));
+            WritePrimitiveValue(value.ToString("R"));
         }
 
-        public override void WriteValue(byte[] value)
+        protected override void WritePrimitiveValue(byte[] value)
         {
             if (value == null)
             {
-                WriteNullValue();
+                WritePrimitiveNullValue();
                 return;
             }
 
@@ -161,16 +161,16 @@ namespace HotChai.Serialization.Bencoding
             this._writer.Write(value);
         }
 
-        public override void WriteValue(string value)
+        protected override void WritePrimitiveValue(string value)
         {
             if (value == null)
             {
-                WriteNullValue();
+                WritePrimitiveNullValue();
                 return;
             }
 
             byte[] bytes = Encoding.UTF8.GetBytes(value);
-            WriteValue(bytes);
+            WritePrimitiveValue(bytes);
         }
 
         public override void Flush()

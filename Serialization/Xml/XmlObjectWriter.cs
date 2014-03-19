@@ -54,103 +54,103 @@ namespace HotChai.Serialization.Xml
             set { this._stream.Inspector = value; }
         }
 
-        public override void WriteStartObject()
+        protected override void WriteStartObjectToken()
         {
             this._writer.WriteStartElement(XmlToken.ObjectElement);
         }
 
-        public override void WriteStartMember(int memberKey)
+        protected override void WriteStartMemberToken(int memberKey)
         {
             this._writer.WriteStartElement(XmlToken.MemberElement);
             this._writer.WriteAttributeString(XmlToken.MemberKeyAttribute, memberKey.ToString(CultureInfo.InvariantCulture));
         }
 
-        public override void WriteEndMember()
+        protected override void WriteEndMemberToken()
         {
             this._writer.WriteEndElement();
         }
 
-        public override void WriteEndObject()
+        protected override void WriteEndObjectToken()
         {
             this._writer.WriteEndElement();
         }
 
-        public override void WriteStartArray()
+        protected override void WriteStartArrayToken()
         {
             this._writer.WriteStartElement(XmlToken.ArrayElement);
         }
 
-        public override void WriteEndArray()
+        protected override void WriteEndArrayToken()
         {
             this._writer.WriteEndElement();
         }
 
-        public override void WriteNullValue()
+        protected override void WritePrimitiveNullValue()
         {
             this._writer.WriteStartElement(XmlToken.NullElement);
             this._writer.WriteEndElement();
         }
 
-        public override void WriteValue(
+        protected override void WritePrimitiveValue(
             bool value)
         {
             if (value)
             {
-                WriteValue("1");
+                WritePrimitiveValue("1");
             }
             else
             {
-                WriteValue("0");
+                WritePrimitiveValue("0");
             }
         }
 
-        public override void WriteValue(int value)
+        protected override void WritePrimitiveValue(int value)
         {
             this._writer.WriteStartElement(XmlToken.ValueElement);
             this._writer.WriteValue(value);
             this._writer.WriteEndElement();
         }
 
-        public override void WriteValue(uint value)
+        protected override void WritePrimitiveValue(uint value)
         {
             this._writer.WriteStartElement(XmlToken.ValueElement);
             this._writer.WriteValue(value);
             this._writer.WriteEndElement();
         }
 
-        public override void WriteValue(long value)
+        protected override void WritePrimitiveValue(long value)
         {
             this._writer.WriteStartElement(XmlToken.ValueElement);
             this._writer.WriteValue(value);
             this._writer.WriteEndElement();
         }
 
-        public override void WriteValue(ulong value)
+        protected override void WritePrimitiveValue(ulong value)
         {
             this._writer.WriteStartElement(XmlToken.ValueElement);
             this._writer.WriteValue(value.ToString(CultureInfo.InvariantCulture));
             this._writer.WriteEndElement();
         }
 
-        public override void WriteValue(float value)
+        protected override void WritePrimitiveValue(float value)
         {
             this._writer.WriteStartElement(XmlToken.ValueElement);
             this._writer.WriteValue(value);
             this._writer.WriteEndElement();
         }
 
-        public override void WriteValue(double value)
+        protected override void WritePrimitiveValue(double value)
         {
             this._writer.WriteStartElement(XmlToken.ValueElement);
             this._writer.WriteValue(value);
             this._writer.WriteEndElement();
         }
 
-        public override void WriteValue(byte[] value)
+        protected override void WritePrimitiveValue(byte[] value)
         {
             if (null == value)
             {
-                WriteNullValue();
+                WritePrimitiveNullValue();
                 return;
             }
 
@@ -159,11 +159,11 @@ namespace HotChai.Serialization.Xml
             this._writer.WriteEndElement();
         }
 
-        public override void WriteValue(string value)
+        protected override void WritePrimitiveValue(string value)
         {
             if (null == value)
             {
-                WriteNullValue();
+                WritePrimitiveNullValue();
                 return;
             }
 

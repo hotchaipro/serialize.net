@@ -16,14 +16,21 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #endregion License
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace HotChai.Serialization
 {
+    /// <summary>
+    /// Writes a serialized object.
+    /// </summary>
     public abstract class ObjectWriter : IObjectWriter
     {
+        private Stack<ObjectWriterState> _state = new Stack<ObjectWriterState>();
+
         protected ObjectWriter()
         {
+            this._state.Push(InitialState.State);
         }
 
         public abstract ISerializationInspector Inspector
@@ -33,76 +40,496 @@ namespace HotChai.Serialization
             set;
         }
 
-        public abstract void WriteStartObject();
+        /// <summary>
+        /// Writes the start of a serialized object.
+        /// </summary>
+        public void WriteStartObject()
+        {
+            this.State.WriteStartObject(this);
+        }
 
-        public abstract void WriteStartMember(
-            int memberKey);
+        /// <summary>
+        /// Writes the start of a serialized object member with the specified key.
+        /// </summary>
+        /// <param name="memberKey">The key of the member.</param>
+        public void WriteStartMember(
+            int memberKey)
+        {
+            this.State.WriteStartMember(this, memberKey);
+        }
 
-        public abstract void WriteEndMember();
+        /// <summary>
+        /// Writes the end of a serialized object member.
+        /// </summary>
+        public void WriteEndMember()
+        {
+            this.State.WriteEndMember(this);
+        }
 
-        public abstract void WriteEndObject();
+        /// <summary>
+        /// Writes the end of a serialized object.
+        /// </summary>
+        public void WriteEndObject()
+        {
+            this.State.WriteEndObject(this);
+        }
 
-        public abstract void WriteStartArray();
+        /// <summary>
+        /// Writes the start of a serialized array.
+        /// </summary>
+        public void WriteStartArray()
+        {
+            this.State.WriteStartArray(this);
+        }
 
-        public abstract void WriteEndArray();
+        /// <summary>
+        /// Writes the end of a serialized array.
+        /// </summary>
+        public void WriteEndArray()
+        {
+            this.State.WriteEndArray(this);
+        }
 
-        public abstract void WriteNullValue();
+        /// <summary>
+        /// Writes a null serialized value.
+        /// </summary>
+        public void WriteNullValue()
+        {
+            this.State.WritePrimitiveValue(this);
 
-        public abstract void WriteValue(
-            bool value);
+            this.WritePrimitiveNullValue();
+        }
 
-        public abstract void WriteValue(
-            int value);
+        /// <summary>
+        /// Writes a <c>Boolean</c> serialized value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        public void WriteValue(
+            bool value)
+        {
+            this.State.WritePrimitiveValue(this);
 
-        public abstract void WriteValue(
-            uint value);
+            this.WritePrimitiveValue(value);
+        }
 
-        public abstract void WriteValue(
-            long value);
+        /// <summary>
+        /// Writes an <c>Int32</c> serialized value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        public void WriteValue(
+            int value)
+        {
+            this.State.WritePrimitiveValue(this);
 
-        public abstract void WriteValue(
-            ulong value);
+            this.WritePrimitiveValue(value);
+        }
 
-        public abstract void WriteValue(
-            float value);
+        /// <summary>
+        /// Writes a <c>UInt32</c> serialized value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        public void WriteValue(
+            uint value)
+        {
+            this.State.WritePrimitiveValue(this);
 
-        public abstract void WriteValue(
-            double value);
+            this.WritePrimitiveValue(value);
+        }
 
-        public abstract void WriteValue(
-            byte[] value);
+        /// <summary>
+        /// Writes an <c>Int64</c> serialized value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        public void WriteValue(
+            long value)
+        {
+            this.State.WritePrimitiveValue(this);
 
-        public abstract void WriteValue(
-            string value);
+            this.WritePrimitiveValue(value);
+        }
 
+        /// <summary>
+        /// Writes a <c>UInt64</c> serialized value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        public void WriteValue(
+            ulong value)
+        {
+            this.State.WritePrimitiveValue(this);
+
+            this.WritePrimitiveValue(value);
+        }
+
+        /// <summary>
+        /// Writes a <c>Single</c> serialized value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        public void WriteValue(
+            float value)
+        {
+            this.State.WritePrimitiveValue(this);
+
+            this.WritePrimitiveValue(value);
+        }
+
+        /// <summary>
+        /// Writes a <c>Double</c> serialized value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        public void WriteValue(
+            double value)
+        {
+            this.State.WritePrimitiveValue(this);
+
+            this.WritePrimitiveValue(value);
+        }
+
+        /// <summary>
+        /// Writes an array of <c>Byte</c> serialized value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        public void WriteValue(
+            byte[] value)
+        {
+            this.State.WritePrimitiveValue(this);
+
+            this.WritePrimitiveValue(value);
+        }
+
+        /// <summary>
+        /// Writes a <c>String</c> serialized value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        public void WriteValue(
+            string value)
+        {
+            this.State.WritePrimitiveValue(this);
+
+            this.WritePrimitiveValue(value);
+        }
+
+        /// <summary>
+        /// Writes any buffered data to the output.
+        /// </summary>
         public abstract void Flush();
 
-        //protected abstract void WriteStartObjectToken();
-        //protected abstract void WriteStartMemberToken(
-        //    int memberKey);
-        //protected abstract void WriteEndMemberToken();
-        //protected abstract void WriteMemberSeparator();
-        //protected abstract void WriteEndObjectToken();
+        #region State machine
 
-        //protected abstract void WriteStartArrayToken();
-        //protected abstract void WriteEndArrayToken();
-        //protected abstract void WriteArrayValueSeparator();
+        private abstract class ObjectWriterState
+        {
+            protected ObjectWriterState()
+            {
+            }
 
-        //protected abstract void WritePrimitiveNullValue();
+            public virtual void WriteStartObject(
+                ObjectWriter writer)
+            {
+                throw new InvalidOperationException();
+            }
 
-        //protected abstract void WritePrimitiveValue(
-        //    int value);
+            public virtual void WriteStartMember(
+                ObjectWriter writer,
+                int memberKey)
+            {
+                throw new InvalidOperationException();
+            }
 
-        //protected abstract void WritePrimitiveValue(
-        //    uint value);
+            public virtual void WriteEndMember(
+                ObjectWriter writer)
+            {
+                throw new InvalidOperationException();
+            }
 
-        //protected abstract void WritePrimitiveValue(
-        //    float value);
+            public virtual void WriteEndObject(
+                ObjectWriter writer)
+            {
+                throw new InvalidOperationException();
+            }
 
-        //protected abstract void WritePrimitiveValue(
-        //    byte[] value);
+            public virtual void WriteStartArray(
+                ObjectWriter writer)
+            {
+                throw new InvalidOperationException();
+            }
 
-        //protected abstract void WritePrimitiveValue(
-        //    string value);
+            public virtual void WriteEndArray(
+                ObjectWriter writer)
+            {
+                throw new InvalidOperationException();
+            }
+
+            public virtual void WritePrimitiveValue(
+                ObjectWriter writer)
+            {
+                throw new InvalidOperationException();
+            }
+        }
+
+        private sealed class InitialState : ObjectWriterState
+        {
+            internal static readonly InitialState State = new InitialState();
+
+            private InitialState()
+            {
+            }
+
+            public override void WriteStartObject(ObjectWriter writer)
+            {
+                writer.WriteStartObjectToken();
+
+                writer.PushState(StartObjectState.State);
+            }
+        }
+
+        private sealed class StartObjectState : ObjectWriterState
+        {
+            internal static readonly StartObjectState State = new StartObjectState();
+
+            private StartObjectState()
+            {
+            }
+
+            public override void WriteStartMember(ObjectWriter writer, int memberKey)
+            {
+                writer.WriteStartMemberToken(memberKey);
+
+                writer.SetState(StartMemberState.State);
+            }
+
+            public override void WriteEndObject(ObjectWriter writer)
+            {
+                writer.WriteEndObjectToken();
+
+                writer.PopState();
+            }
+        }
+
+        private sealed class StartMemberState : ObjectWriterState
+        {
+            internal static readonly StartMemberState State = new StartMemberState();
+
+            private StartMemberState()
+            {
+            }
+
+            public override void WriteStartObject(ObjectWriter writer)
+            {
+                writer.WriteStartObjectToken();
+
+                writer.SetState(MemberValueState.State);
+                writer.PushState(StartObjectState.State);
+            }
+
+            public override void WriteStartArray(ObjectWriter writer)
+            {
+                writer.WriteStartArrayToken();
+
+                writer.SetState(MemberValueState.State);
+                writer.PushState(ArrayState.State);
+            }
+
+            public override void WritePrimitiveValue(ObjectWriter writer)
+            {
+                writer.SetState(MemberValueState.State);
+            }
+        }
+
+        private sealed class MemberValueState : ObjectWriterState
+        {
+            internal static readonly MemberValueState State = new MemberValueState();
+
+            private MemberValueState()
+            {
+            }
+
+            public override void WriteEndMember(ObjectWriter writer)
+            {
+                writer.WriteEndMemberToken();
+
+                writer.SetState(EndMemberState.State);
+            }
+        }
+
+        private sealed class EndMemberState : ObjectWriterState
+        {
+            internal static readonly EndMemberState State = new EndMemberState();
+
+            private EndMemberState()
+            {
+            }
+
+            public override void WriteStartMember(ObjectWriter writer, int memberKey)
+            {
+                writer.WriteMemberSeparator();
+
+                StartObjectState.State.WriteStartMember(writer, memberKey);
+            }
+
+            public override void WriteEndObject(ObjectWriter writer)
+            {
+                StartObjectState.State.WriteEndObject(writer);
+            }
+        }
+
+        private sealed class ArrayState : ObjectWriterState
+        {
+            internal static readonly ArrayState State = new ArrayState();
+
+            private ArrayState()
+            {
+            }
+
+            public override void WriteStartObject(ObjectWriter writer)
+            {
+                writer.WriteStartObjectToken();
+
+                writer.SetState(ArrayValueState.State);
+                writer.PushState(StartObjectState.State);
+            }
+
+            public override void WriteStartArray(ObjectWriter writer)
+            {
+                writer.WriteStartArrayToken();
+
+                writer.SetState(ArrayValueState.State);
+                writer.PushState(ArrayState.State);
+            }
+
+            public override void WritePrimitiveValue(ObjectWriter writer)
+            {
+                writer.SetState(ArrayValueState.State);
+            }
+
+            public override void WriteEndArray(ObjectWriter writer)
+            {
+                writer.WriteEndArrayToken();
+
+                writer.PopState();
+            }
+        }
+
+        private sealed class ArrayValueState : ObjectWriterState
+        {
+            internal static readonly ArrayValueState State = new ArrayValueState();
+
+            private ArrayValueState()
+            {
+            }
+
+            public override void WriteStartObject(ObjectWriter writer)
+            {
+                writer.WriteArrayValueSeparator();
+
+                writer.WriteStartObjectToken();
+
+                writer.PushState(StartObjectState.State);
+            }
+
+            public override void WriteStartArray(ObjectWriter writer)
+            {
+                writer.WriteArrayValueSeparator();
+
+                writer.WriteStartArrayToken();
+
+                writer.PushState(ArrayState.State);
+            }
+
+            public override void WritePrimitiveValue(ObjectWriter writer)
+            {
+                writer.WriteArrayValueSeparator();
+            }
+
+            public override void WriteEndArray(ObjectWriter writer)
+            {
+                writer.WriteEndArrayToken();
+
+                writer.PopState();
+            }
+        }
+
+        private ObjectWriterState State
+        {
+            get { return this._state.Peek(); }
+        }
+
+        private void PushState(
+            ObjectWriterState state)
+        {
+            if (null == state)
+            {
+                throw new ArgumentNullException("state");
+            }
+
+            this._state.Push(state);
+        }
+
+        private void PopState()
+        {
+            if (this._state.Count <= 1)
+            {
+                throw new InvalidOperationException();
+            }
+
+            this._state.Pop();
+        }
+
+        private void SetState(
+            ObjectWriterState state)
+        {
+            PopState();
+            PushState(state);
+        }
+
+        #endregion State machine
+
+        protected abstract void WriteStartObjectToken();
+
+        protected abstract void WriteStartMemberToken(
+            int memberKey);
+
+        protected abstract void WriteEndMemberToken();
+
+        protected virtual void WriteMemberSeparator()
+        {
+        }
+
+        protected abstract void WriteEndObjectToken();
+
+        protected abstract void WriteStartArrayToken();
+
+        protected virtual void WriteArrayValueSeparator()
+        {
+        }
+
+        protected abstract void WriteEndArrayToken();
+
+        protected abstract void WritePrimitiveNullValue();
+
+        protected abstract void WritePrimitiveValue(
+            bool value);
+
+        protected abstract void WritePrimitiveValue(
+            int value);
+
+        protected abstract void WritePrimitiveValue(
+            uint value);
+
+        protected abstract void WritePrimitiveValue(
+            long value);
+
+        protected abstract void WritePrimitiveValue(
+            ulong value);
+
+        protected abstract void WritePrimitiveValue(
+            float value);
+
+        protected abstract void WritePrimitiveValue(
+            double value);
+
+        protected abstract void WritePrimitiveValue(
+            byte[] value);
+
+        protected abstract void WritePrimitiveValue(
+            string value);
     }
 }
