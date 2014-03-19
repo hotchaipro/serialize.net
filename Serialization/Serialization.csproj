@@ -47,6 +47,7 @@
     <Compile Include="Json\JsonObjectWriter.cs" />
     <Compile Include="MemberValueType.cs" />
     <Compile Include="ObjectReader.cs" />
+    <Compile Include="ObjectReaderExtensions.cs" />
     <Compile Include="ObjectWriter.cs" />
     <Compile Include="ObjectWriterExtensions.cs" />
     <Compile Include="PortableBinary\PortableBinaryObjectReader.cs" />

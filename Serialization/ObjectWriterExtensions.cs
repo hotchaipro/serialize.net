@@ -23,45 +23,7 @@ namespace HotChai.Serialization
 {
     public static class ObjectWriterExtensions
     {
-        public static bool WriteStartObject(
-            this IObjectWriter writer,
-            Object obj)
-        {
-            if (null == writer)
-            {
-                throw new ArgumentNullException("writer");
-            }
-
-            if (obj == null)
-            {
-                writer.WriteNullValue();
-                return false;
-            }
-
-            writer.WriteStartObject();
-
-            return true;
-        }
-
-        public static bool WriteStartArray(
-            this IObjectWriter writer,
-            IEnumerable array)
-        {
-            if (null == writer)
-            {
-                throw new ArgumentNullException("writer");
-            }
-
-            if (array == null)
-            {
-                writer.WriteNullValue();
-                return false;
-            }
-
-            writer.WriteStartArray();
-
-            return true;
-        }
+        #region Member writers
 
         public static void WriteMember(
             this IObjectWriter writer,
@@ -198,6 +160,10 @@ namespace HotChai.Serialization
             writer.WriteEndMember();
         }
 
+        #endregion Member writers
+
+        #region Member array writers
+
         public static void WriteMember(
             this IObjectWriter writer,
             int key,
@@ -317,6 +283,10 @@ namespace HotChai.Serialization
             writer.WriteArray(value);
             writer.WriteEndMember();
         }
+
+        #endregion Member array writers
+
+        #region Array value writers
 
         public static void WriteArray(
             this IObjectWriter writer,
@@ -517,5 +487,35 @@ namespace HotChai.Serialization
 
             writer.WriteEndArray();
         }
+
+        #endregion Array value writers
+
+        #region Extended types
+
+        public static void WriteValue(
+            this IObjectWriter writer,
+            TimeSpan value)
+        {
+            if (null == writer)
+            {
+                throw new ArgumentNullException("writer");
+            }
+
+            writer.WriteValue(value.Ticks);
+        }
+
+        public static void WriteValue(
+            this IObjectWriter writer,
+            DateTimeOffset value)
+        {
+            if (null == writer)
+            {
+                throw new ArgumentNullException("writer");
+            }
+
+            writer.WriteValue(value.UtcTicks);
+        }
+
+        #endregion Extended types
     }
 }

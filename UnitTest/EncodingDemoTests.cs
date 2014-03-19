@@ -16,9 +16,9 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #endregion License
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using HotChai.Serialization.Json;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace HotChai.Serialization.UnitTest
@@ -41,6 +41,7 @@ namespace HotChai.Serialization.UnitTest
             {
                 Id = 1,
                 Name = "Foo",
+                Scores = new int[] { 1, 2, 3 },
             };
 
             SerializePersonTest(person, new PortableBinaryObjectReaderWriterFactory());
@@ -57,50 +58,100 @@ namespace HotChai.Serialization.UnitTest
 
                 byte[] serialized = stream.ToArray();
 
+#if DEBUG
                 string writeDump = serialized.ToAsciiDumpString();
                 Debug.WriteLine(writeDump);
+#endif
 
                 Test.Output("{0} writer wrote {1} bytes", factory.Name, serialized.Length);
 
-                stream.Position = 0;
+                // Deserializer 1
 
-                DeserializePerson(factory.CreateReader(stream));
+                stream.Position = 0;
+                DeserializePerson1(factory.CreateReader(stream));
+
+                // Deserializer 2
+
+                stream.Position = 0;
+                DeserializePerson2(factory.CreateReader(stream));
             }
         }
 
         public static void SerializePerson(Person person, IObjectWriter writer)
         {
-            if (writer.WriteStartObject(person))
+            if (person == null)
             {
+                writer.WriteNullValue();
+            }
+            else
+            {
+                writer.WriteStartObject();
+
                 writer.WriteMember(1, person.Id);
                 writer.WriteMember(2, person.Name);
+                writer.WriteMember(3, person.Scores);
+
                 writer.WriteEndObject();
             }
 
+            // TODO: Auto-flush
             writer.Flush();
         }
 
-        public static Person DeserializePerson(IObjectReader reader)
+        public static Person DeserializePerson1(IObjectReader reader)
         {
-            Person person = null;
-
-            if (reader.ReadStartObject())
+            if (!reader.ReadStartObject())
             {
-                person = new Person();
+                return null;
+            }
 
-                while (reader.ReadNextMemberKey())
+            Person person = new Person();
+
+            while (reader.ReadNextMemberKey())
+            {
+                if (reader.MemberKey == 1)
                 {
-                    if (reader.MemberKey == 1)
-                    {
-                        person.Id = reader.ReadValueAsInt32();
-                    }
-                    else if (reader.MemberKey == 2)
-                    {
-                        person.Name = reader.ReadValueAsString(250);
-                    }
+                    person.Id = reader.ReadValueAsInt32();
                 }
+                else if (reader.MemberKey == 2)
+                {
+                    person.Name = reader.ReadValueAsString(250);
+                }
+                else if (reader.MemberKey == 3)
+                {
+                    person.Scores = reader.ReadValueAsInt32Array();
+                }
+            }
 
-                reader.ReadEndObject();
+            reader.ReadEndObject();
+
+            return person;
+        }
+
+        public static Person DeserializePerson2(IObjectReader reader)
+        {
+            var obj = reader.GetObject();
+            if (obj == null)
+            {
+                return null;
+            }
+
+            Person person = new Person();
+
+            foreach (var member in obj.Members)
+            {
+                if (member.MemberKey == 1)
+                {
+                    person.Id = member.ReadValueAsInt32();
+                }
+                else if (member.MemberKey == 2)
+                {
+                    person.Name = member.ReadValueAsString(250);
+                }
+                else if (member.MemberKey == 3)
+                {
+                    person.Scores = member.ReadValueAsInt32Array();
+                }
             }
 
             return person;

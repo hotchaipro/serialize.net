@@ -181,74 +181,50 @@ namespace HotChai.Serialization.UnitTest
 
             // Array of objects
             WriteMember(writer, MemberKey.ArrayOfObjects, complexObject.ArrayOfObjects);
-
-            // Array of objects (write-only)
             WriteMember(writer, MemberKey.WriteOnlyArrayOfObjects, complexObject.ArrayOfObjects);
 
             // Empty array of objects
             WriteMember(writer, MemberKey.EmptyArrayOfObjects, complexObject.EmptyArrayOfObjects);
-
-            // Empty array of objects (write-only)
             WriteMember(writer, MemberKey.WriteOnlyEmptyArrayOfObjects, complexObject.EmptyArrayOfObjects);
 
             // Null array of objects
             WriteMember(writer, MemberKey.NullArrayOfObjects, complexObject.NullArrayOfObjects);
-
-            // Null array of objects (write-only)
             WriteMember(writer, MemberKey.WriteOnlyNullArrayOfObjects, complexObject.NullArrayOfObjects);
 
             // Nested array of ints
             WriteMember(writer, MemberKey.NestedArrayOfInts, complexObject.NestedArrayOfInts);
-
-            // Nested array of ints (write-only)
             WriteMember(writer, MemberKey.WriteOnlyNestedArrayOfInts, complexObject.NestedArrayOfInts);
 
             // Empty nested array of ints
             WriteMember(writer, MemberKey.NestedEmptyArrayOfInts, complexObject.NestedEmptyArrayOfInts);
-
-            // Empty nested array of ints (write-only)
             WriteMember(writer, MemberKey.WriteOnlyNestedEmptyArrayOfInts, complexObject.NestedEmptyArrayOfInts);
 
             // Null nested array of ints
             WriteMember(writer, MemberKey.NestedNullArrayOfInts, complexObject.NestedNullArrayOfInts);
-
-            // Null nested array of ints (write-only)
             WriteMember(writer, MemberKey.WriteOnlyNestedNullArrayOfInts, complexObject.NestedNullArrayOfInts);
 
             // Nested array of strings
             WriteMember(writer, MemberKey.NestedArrayOfStrings, complexObject.NestedArrayOfStrings);
-
-            // Nested array of strings (write-only)
             WriteMember(writer, MemberKey.WriteOnlyNestedArrayOfStrings, complexObject.NestedArrayOfStrings);
 
             // Empty nested array of strings
             WriteMember(writer, MemberKey.NestedEmptyArrayOfStrings, complexObject.NestedEmptyArrayOfStrings);
-
-            // Empty nested array of strings (write-only)
             WriteMember(writer, MemberKey.WriteOnlyNestedEmptyArrayOfStrings, complexObject.NestedEmptyArrayOfStrings);
 
             // Null nested array of strings
             WriteMember(writer, MemberKey.NestedNullArrayOfStrings, complexObject.NestedNullArrayOfStrings);
-
-            // Null nested array of strings (write-only)
             WriteMember(writer, MemberKey.WriteOnlyNestedNullArrayOfStrings, complexObject.NestedNullArrayOfStrings);
 
             // Nested array of objects
             WriteMember(writer, MemberKey.NestedArrayOfObjects, complexObject.NestedArrayOfObjects);
-
-            // Nested array of objects (write-only)
             WriteMember(writer, MemberKey.WriteOnlyNestedArrayOfObjects, complexObject.NestedArrayOfObjects);
 
             // Empty nested array of objects
             WriteMember(writer, MemberKey.NestedEmptyArrayOfObjects, complexObject.NestedEmptyArrayOfObjects);
-
-            // Empty nested array of objects (write-only)
             WriteMember(writer, MemberKey.WriteOnlyNestedEmptyArrayOfObjects, complexObject.NestedEmptyArrayOfObjects);
 
             // Null nested array of objects
             WriteMember(writer, MemberKey.NestedNullArrayOfObjects, complexObject.NestedNullArrayOfObjects);
-
-            // Null nested array of objects (write-only)
             WriteMember(writer, MemberKey.WriteOnlyNestedNullArrayOfObjects, complexObject.NestedNullArrayOfObjects);
 
             writer.WriteEndObject();
@@ -353,8 +329,14 @@ namespace HotChai.Serialization.UnitTest
             SimpleObject[] array)
         {
             writer.WriteStartMember(memberKey);
-            if (writer.WriteStartArray(array))
+
+            if (null == array)
             {
+                writer.WriteNullValue();
+            }
+            else
+            {
+                writer.WriteStartArray();
                 foreach (SimpleObject simpleObject in array)
                 {
                     SimpleObject.WriteTo(writer, simpleObject);
@@ -392,12 +374,22 @@ namespace HotChai.Serialization.UnitTest
             int[][] array)
         {
             writer.WriteStartMember(memberKey);
-            if (writer.WriteStartArray(array))
+            if (array == null)
             {
+                writer.WriteNullValue();
+            }
+            else
+            {
+                writer.WriteStartArray();
                 foreach (var nestedArray in array)
                 {
-                    if (writer.WriteStartArray(nestedArray))
+                    if (nestedArray == null)
                     {
+                        writer.WriteNullValue();
+                    }
+                    else
+                    {
+                        writer.WriteStartArray();
                         foreach (var value in nestedArray)
                         {
                             writer.WriteValue(value);
@@ -454,12 +446,22 @@ namespace HotChai.Serialization.UnitTest
             string[][] array)
         {
             writer.WriteStartMember(memberKey);
-            if (writer.WriteStartArray(array))
+            if (array == null)
             {
+                writer.WriteNullValue();
+            }
+            else
+            {
+                writer.WriteStartArray();
                 foreach (var nestedArray in array)
                 {
-                    if (writer.WriteStartArray(nestedArray))
+                    if (nestedArray == null)
                     {
+                        writer.WriteNullValue();
+                    }
+                    else
+                    {
+                        writer.WriteStartArray();
                         foreach (var value in nestedArray)
                         {
                             writer.WriteValue(value);
@@ -516,12 +518,22 @@ namespace HotChai.Serialization.UnitTest
             SimpleObject[][] array)
         {
             writer.WriteStartMember(memberKey);
-            if (writer.WriteStartArray(array))
+            if (array == null)
             {
+                writer.WriteNullValue();
+            }
+            else
+            {
+                writer.WriteStartArray();
                 foreach (var nestedArray in array)
                 {
-                    if (writer.WriteStartArray(nestedArray))
+                    if (null == nestedArray)
                     {
+                        writer.WriteNullValue();
+                    }
+                    else
+                    {
+                        writer.WriteStartArray();
                         foreach (var value in nestedArray)
                         {
                             SimpleObject.WriteTo(writer, value);

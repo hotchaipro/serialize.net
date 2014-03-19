@@ -227,191 +227,91 @@ namespace HotChai.Serialization.UnitTest
             writer.WriteStartObject();
 
             // String
-            writer.WriteStartMember(MemberKey.StringValue);
-            writer.WriteValue(simpleObject.StringValue);
-            writer.WriteEndMember();
-
-            // String (write-only)
-            writer.WriteStartMember(MemberKey.WriteOnlyStringValue);
-            writer.WriteValue(simpleObject.StringValue);
-            writer.WriteEndMember();
+            writer.WriteMember(MemberKey.StringValue, simpleObject.StringValue);
+            writer.WriteMember(MemberKey.WriteOnlyStringValue, simpleObject.StringValue);
 
             // Empty String
-            writer.WriteStartMember(MemberKey.StringEmptyValue);
-            writer.WriteValue(simpleObject.StringEmptyValue);
-            writer.WriteEndMember();
-
-            // Empty String (write-only)
-            writer.WriteStartMember(MemberKey.WriteOnlyStringEmptyValue);
-            writer.WriteValue(simpleObject.StringEmptyValue);
-            writer.WriteEndMember();
+            writer.WriteMember(MemberKey.StringEmptyValue, simpleObject.StringEmptyValue);
+            writer.WriteMember(MemberKey.WriteOnlyStringEmptyValue, simpleObject.StringEmptyValue);
 
             // Null String
-            writer.WriteStartMember(MemberKey.StringNullValue);
-            writer.WriteValue(simpleObject.StringNullValue);
-            writer.WriteEndMember();
-
-            // Null String (write-only)
-            writer.WriteStartMember(MemberKey.WriteOnlyStringNullValue);
-            writer.WriteValue(simpleObject.StringNullValue);
-            writer.WriteEndMember();
+            writer.WriteMember(MemberKey.StringNullValue, simpleObject.StringNullValue);
+            writer.WriteMember(MemberKey.WriteOnlyStringNullValue, simpleObject.StringNullValue);
 
             // Byte[]
-            writer.WriteStartMember(MemberKey.ByteArrayValue);
-            writer.WriteValue(simpleObject.ByteArrayValue);
-            writer.WriteEndMember();
-
-            // Byte[] (write-only)
-            writer.WriteStartMember(MemberKey.WriteOnlyByteArrayValue);
-            writer.WriteValue(simpleObject.ByteArrayValue);
-            writer.WriteEndMember();
+            writer.WriteMember(MemberKey.ByteArrayValue, simpleObject.ByteArrayValue);
+            writer.WriteMember(MemberKey.WriteOnlyByteArrayValue, simpleObject.ByteArrayValue);
 
             // Empty Byte[]
-            writer.WriteStartMember(MemberKey.ByteArrayEmptyValue);
-            writer.WriteValue(simpleObject.ByteArrayEmptyValue);
-            writer.WriteEndMember();
-
-            // Empty Byte[] (write-only)
-            writer.WriteStartMember(MemberKey.WriteOnlyByteArrayEmptyValue);
-            writer.WriteValue(simpleObject.ByteArrayEmptyValue);
-            writer.WriteEndMember();
+            writer.WriteMember(MemberKey.ByteArrayEmptyValue, simpleObject.ByteArrayEmptyValue);
+            writer.WriteMember(MemberKey.WriteOnlyByteArrayEmptyValue, simpleObject.ByteArrayEmptyValue);
 
             // Null Byte[]
-            writer.WriteStartMember(MemberKey.ByteArrayNullValue);
-            writer.WriteValue(simpleObject.ByteArrayNullValue);
-            writer.WriteEndMember();
-
-            // Null Byte[] (write-only)
-            writer.WriteStartMember(MemberKey.WriteOnlyByteArrayNullValue);
-            writer.WriteValue(simpleObject.ByteArrayNullValue);
-            writer.WriteEndMember();
+            writer.WriteMember(MemberKey.ByteArrayNullValue, simpleObject.ByteArrayNullValue);
+            writer.WriteMember(MemberKey.WriteOnlyByteArrayNullValue, simpleObject.ByteArrayNullValue);
 
             // 0 Int
-            writer.WriteStartMember(MemberKey.Int32ZeroValue);
-            writer.WriteValue(simpleObject.Int32ZeroValue);
-            writer.WriteEndMember();
-
-            // 0 Int (write-only)
-            writer.WriteStartMember(MemberKey.WriteOnlyInt32ZeroValue);
-            writer.WriteValue(simpleObject.Int32ZeroValue);
-            writer.WriteEndMember();
+            writer.WriteMember(MemberKey.Int32ZeroValue, simpleObject.Int32ZeroValue);
+            writer.WriteMember(MemberKey.WriteOnlyInt32ZeroValue, simpleObject.Int32ZeroValue);
 
             // Min Int
-            writer.WriteStartMember(MemberKey.Int32MinValue);
-            writer.WriteValue(simpleObject.Int32MinValue);
-            writer.WriteEndMember();
-
-            // Min Int (write-only)
-            writer.WriteStartMember(MemberKey.WriteOnlyInt32MinValue);
-            writer.WriteValue(simpleObject.Int32MinValue);
-            writer.WriteEndMember();
+            writer.WriteMember(MemberKey.Int32MinValue, simpleObject.Int32MinValue);
+            writer.WriteMember(MemberKey.WriteOnlyInt32MinValue, simpleObject.Int32MinValue);
 
             // Max Int
-            writer.WriteStartMember(MemberKey.Int32MaxValue);
-            writer.WriteValue(simpleObject.Int32MaxValue);
-            writer.WriteEndMember();
-
-            // Max Int (write-only)
-            writer.WriteStartMember(MemberKey.WriteOnlyInt32MaxValue);
-            writer.WriteValue(simpleObject.Int32MaxValue);
-            writer.WriteEndMember();
+            writer.WriteMember(MemberKey.Int32MaxValue, simpleObject.Int32MaxValue);
+            writer.WriteMember(MemberKey.WriteOnlyInt32MaxValue, simpleObject.Int32MaxValue);
 
             // Min UInt32
-            writer.WriteStartMember(MemberKey.UInt32MinValue);
-            writer.WriteValue(simpleObject.UInt32MinValue);
-            writer.WriteEndMember();
-
-            // Min UInt32 (write-only)
-            writer.WriteStartMember(MemberKey.WriteOnlyUInt32MinValue);
-            writer.WriteValue(simpleObject.UInt32MinValue);
-            writer.WriteEndMember();
+            writer.WriteMember(MemberKey.UInt32MinValue, simpleObject.UInt32MinValue);
+            writer.WriteMember(MemberKey.WriteOnlyUInt32MinValue, simpleObject.UInt32MinValue);
 
             // Max UInt32
-            writer.WriteStartMember(MemberKey.UInt32MaxValue);
-            writer.WriteValue(simpleObject.UInt32MaxValue);
-            writer.WriteEndMember();
-
-            // Max UInt32 (write-only)
-            writer.WriteStartMember(MemberKey.WriteOnlyUInt32MaxValue);
-            writer.WriteValue(simpleObject.UInt32MaxValue);
-            writer.WriteEndMember();
+            writer.WriteMember(MemberKey.UInt32MaxValue, simpleObject.UInt32MaxValue);
+            writer.WriteMember(MemberKey.WriteOnlyUInt32MaxValue, simpleObject.UInt32MaxValue);
 
             // Single
-            writer.WriteStartMember(MemberKey.SingleValue);
-            writer.WriteValue(simpleObject.SingleValue);
-            writer.WriteEndMember();
-
-            // Single (write-only)
-            writer.WriteStartMember(MemberKey.WriteOnlySingleValue);
-            writer.WriteValue(simpleObject.SingleValue);
-            writer.WriteEndMember();
+            writer.WriteMember(MemberKey.SingleValue, simpleObject.SingleValue);
+            writer.WriteMember(MemberKey.WriteOnlySingleValue, simpleObject.SingleValue);
 
             // Min Single
-            writer.WriteStartMember(MemberKey.SingleMinValue);
-            writer.WriteValue(simpleObject.SingleMinValue);
-            writer.WriteEndMember();
-
-            // Min Single (write-only)
-            writer.WriteStartMember(MemberKey.WriteOnlySingleMinValue);
-            writer.WriteValue(simpleObject.SingleMinValue);
-            writer.WriteEndMember();
+            writer.WriteMember(MemberKey.SingleMinValue, simpleObject.SingleMinValue);
+            writer.WriteMember(MemberKey.WriteOnlySingleMinValue, simpleObject.SingleMinValue);
 
             // Max Single
-            writer.WriteStartMember(MemberKey.SingleMaxValue);
-            writer.WriteValue(simpleObject.SingleMaxValue);
-            writer.WriteEndMember();
-
-            // Max Single (write-only)
-            writer.WriteStartMember(MemberKey.WriteOnlySingleMaxValue);
-            writer.WriteValue(simpleObject.SingleMaxValue);
-            writer.WriteEndMember();
+            writer.WriteMember(MemberKey.SingleMaxValue, simpleObject.SingleMaxValue);
+            writer.WriteMember(MemberKey.WriteOnlySingleMaxValue, simpleObject.SingleMaxValue);
 
             // Int32 Array
             writer.WriteMember(MemberKey.Int32ArrayValue, simpleObject.Int32ArrayValue);
-
-            // Int32 Array (write-only)
             writer.WriteMember(MemberKey.WriteOnlyInt32ArrayValue, simpleObject.Int32ArrayValue);
 
             // Empty Int32 Array
             writer.WriteMember(MemberKey.Int32ArrayEmptyValue, simpleObject.Int32ArrayEmptyValue);
-
-            // Empty Int32 Array (write-only)
             writer.WriteMember(MemberKey.WriteOnlyInt32ArrayEmptyValue, simpleObject.Int32ArrayEmptyValue);
 
             // Null Int32 Array
             writer.WriteMember(MemberKey.Int32ArrayNullValue, simpleObject.Int32ArrayNullValue);
-
-            // Null Int32 Array (write-only)
             writer.WriteMember(MemberKey.WriteOnlyInt32ArrayNullValue, simpleObject.Int32ArrayNullValue);
 
             // String Array
             writer.WriteMember(MemberKey.StringArrayValue, simpleObject.StringArrayValue);
-
-            // String Array (write-only)
             writer.WriteMember(MemberKey.WriteOnlyStringArrayValue, simpleObject.StringArrayValue);
 
             // Empty String Array
             writer.WriteMember(MemberKey.StringArrayEmptyValue, simpleObject.StringArrayEmptyValue);
-
-            // Empty String Array (write-only)
             writer.WriteMember(MemberKey.WriteOnlyStringArrayEmptyValue, simpleObject.StringArrayEmptyValue);
 
             // Null String Array
             writer.WriteMember(MemberKey.StringArrayNullValue, simpleObject.StringArrayNullValue);
-
-            // Null String Array (write-only)
             writer.WriteMember(MemberKey.WriteOnlyStringArrayNullValue, simpleObject.StringArrayNullValue);
 
             // String with escapes
             writer.WriteMember(MemberKey.StringWithEscapesValue, simpleObject.StringWithEscapesValue);
-
-            // Write-only string with escapes
             writer.WriteMember(MemberKey.WriteOnlyStringWithEscapesValue, simpleObject.StringWithEscapesValue);
 
             // String with surrogate pairs
             writer.WriteMember(MemberKey.StringWithSurrogatePairsValue, simpleObject.StringWithSurrogatePairsValue);
-
-            // Write-only string with surrogate pairs
             writer.WriteMember(MemberKey.WriteOnlyStringWithSurrogatePairsValue, simpleObject.StringWithSurrogatePairsValue);
 
             // Double
@@ -538,99 +438,27 @@ namespace HotChai.Serialization.UnitTest
                     }
                     else if (memberKey == MemberKey.Int32ArrayValue)
                     {
-                        if (reader.ReadStartArray())
-                        {
-                            List<int> list = new List<int>();
-
-                            while (reader.MoveToNextArrayValue())
-                            {
-                                list.Add(reader.ReadValueAsInt32());
-                            }
-
-                            reader.ReadEndArray();
-
-                            simpleObject.Int32ArrayValue = list.ToArray();
-                        }
+                        simpleObject.Int32ArrayValue = reader.ReadValueAsInt32Array();
                     }
                     else if (memberKey == MemberKey.Int32ArrayEmptyValue)
                     {
-                        if (reader.ReadStartArray())
-                        {
-                            List<int> list = new List<int>();
-
-                            while (reader.MoveToNextArrayValue())
-                            {
-                                list.Add(reader.ReadValueAsInt32());
-                            }
-
-                            reader.ReadEndArray();
-
-                            simpleObject.Int32ArrayEmptyValue = list.ToArray();
-                        }
+                        simpleObject.Int32ArrayEmptyValue = reader.ReadValueAsInt32Array();
                     }
                     else if (memberKey == MemberKey.Int32ArrayNullValue)
                     {
-                        if (reader.ReadStartArray())
-                        {
-                            List<int> list = new List<int>();
-
-                            while (reader.MoveToNextArrayValue())
-                            {
-                                list.Add(reader.ReadValueAsInt32());
-                            }
-
-                            reader.ReadEndArray();
-
-                            simpleObject.Int32ArrayNullValue = list.ToArray();
-                        }
+                        simpleObject.Int32ArrayNullValue = reader.ReadValueAsInt32Array();
                     }
                     else if (memberKey == MemberKey.StringArrayValue)
                     {
-                        if (reader.ReadStartArray())
-                        {
-                            List<string> list = new List<string>();
-
-                            while (reader.MoveToNextArrayValue())
-                            {
-                                list.Add(reader.ReadValueAsString(StringQuotaInBytes));
-                            }
-
-                            reader.ReadEndArray();
-
-                            simpleObject.StringArrayValue = list.ToArray();
-                        }
+                        simpleObject.StringArrayValue = reader.ReadValueAsStringArray(StringQuotaInBytes);
                     }
                     else if (memberKey == MemberKey.StringArrayEmptyValue)
                     {
-                        if (reader.ReadStartArray())
-                        {
-                            List<string> list = new List<string>();
-
-                            while (reader.MoveToNextArrayValue())
-                            {
-                                list.Add(reader.ReadValueAsString(StringQuotaInBytes));
-                            }
-
-                            reader.ReadEndArray();
-
-                            simpleObject.StringArrayEmptyValue = list.ToArray();
-                        }
+                        simpleObject.StringArrayEmptyValue = reader.ReadValueAsStringArray(StringQuotaInBytes);
                     }
                     else if (memberKey == MemberKey.StringArrayNullValue)
                     {
-                        if (reader.ReadStartArray())
-                        {
-                            List<string> list = new List<string>();
-
-                            while (reader.MoveToNextArrayValue())
-                            {
-                                list.Add(reader.ReadValueAsString(StringQuotaInBytes));
-                            }
-
-                            reader.ReadEndArray();
-
-                            simpleObject.StringArrayNullValue = list.ToArray();
-                        }
+                        simpleObject.StringArrayNullValue = reader.ReadValueAsStringArray(StringQuotaInBytes);
                     }
                     else if (memberKey == MemberKey.StringWithEscapesValue)
                     {
@@ -686,19 +514,7 @@ namespace HotChai.Serialization.UnitTest
                     }
                     else if (memberKey == MemberKey.BooleanArrayValue)
                     {
-                        if (reader.ReadStartArray())
-                        {
-                            List<bool> list = new List<bool>();
-
-                            while (reader.MoveToNextArrayValue())
-                            {
-                                list.Add(reader.ReadValueAsBoolean());
-                            }
-
-                            reader.ReadEndArray();
-
-                            simpleObject.BooleanArrayValue = list.ToArray();
-                        }
+                        simpleObject.BooleanArrayValue = reader.ReadValueAsBooleanArray();
                     }
                     //else
                     //{
