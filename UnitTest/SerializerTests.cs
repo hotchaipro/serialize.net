@@ -143,7 +143,6 @@ namespace HotChai.Serialization.UnitTest
                     stream.SetLength(0);
                     writer = factory.CreateWriter(stream);
                     SimpleObject.WriteTo(writer, writeObject);
-                    writer.Flush();
                 }
 
                 writeStopWatch.Start();
@@ -153,7 +152,6 @@ namespace HotChai.Serialization.UnitTest
                     stream.SetLength(0);
                     writer = factory.CreateWriter(stream);
                     SimpleObject.WriteTo(writer, writeObject);
-                    writer.Flush();
                 }
 
                 writeStopWatch.Stop();
@@ -226,7 +224,6 @@ namespace HotChai.Serialization.UnitTest
                     stream.SetLength(0);
                     writer = factory.CreateWriter(stream);
                     ComplexObject.WriteTo(writer, writeObject);
-                    writer.Flush();
                 }
 
                 writeStopWatch.Start();
@@ -236,7 +233,6 @@ namespace HotChai.Serialization.UnitTest
                     stream.SetLength(0);
                     writer = factory.CreateWriter(stream);
                     ComplexObject.WriteTo(writer, writeObject);
-                    writer.Flush();
                 }
 
                 writeStopWatch.Stop();
@@ -302,8 +298,6 @@ namespace HotChai.Serialization.UnitTest
 
                 SimpleObject.WriteTo(writer, writeObject);
 
-                writer.Flush();
-
                 writeStopWatch.Stop();
 
                 serialized = stream.ToArray();
@@ -354,8 +348,6 @@ namespace HotChai.Serialization.UnitTest
 
                 ComplexObject.WriteTo(writer, writeObject);
 
-                writer.Flush();
-
                 writeStopWatch.Stop();
 
                 serialized = stream.ToArray();
@@ -389,8 +381,6 @@ namespace HotChai.Serialization.UnitTest
                 var writer = factory.CreateWriter(stream);
 
                 ComplexObject.WriteTo(writer, readObject);
-
-                writer.Flush();
 
                 deserialized = stream.ToArray();
             }

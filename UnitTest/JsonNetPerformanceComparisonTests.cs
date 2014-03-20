@@ -171,7 +171,6 @@ namespace HotChai.Serialization.UnitTest
                     stream.SetLength(0);
                     writer = factory.CreateWriter(stream);
                     JsonNetSimpleObject.WriteTo(writer, writeObject);
-                    writer.Flush();
                 }
 
                 writer = factory.CreateWriter(Stream.Null);
@@ -181,7 +180,6 @@ namespace HotChai.Serialization.UnitTest
                 for (int i = 0; i < Iterations; i += 1)
                 {
                     JsonNetSimpleObject.WriteTo(writer, writeObject);
-                    writer.Flush();
                 }
 
                 writeStopWatch.Stop();

@@ -93,9 +93,6 @@ namespace HotChai.Serialization.UnitTest
 
                 writer.WriteEndObject();
             }
-
-            // TODO: Auto-flush
-            writer.Flush();
         }
 
         public static Person DeserializePerson1(IObjectReader reader)

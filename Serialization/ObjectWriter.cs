@@ -301,6 +301,12 @@ namespace HotChai.Serialization
                 writer.WriteEndObjectToken();
 
                 writer.PopState();
+
+                // Auto-flush
+                if (writer.State == InitialState.State)
+                {
+                    writer.Flush();
+                }
             }
         }
 
