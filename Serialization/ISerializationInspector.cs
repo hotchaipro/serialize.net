@@ -19,7 +19,7 @@ using System;
 
 namespace HotChai.Serialization
 {
-    public interface ISerializationInspector : IDisposable
+    public interface ISerializationInspector
     {
         void AddContent(
             byte[] bytes,

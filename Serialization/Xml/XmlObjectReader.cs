@@ -23,11 +23,12 @@ using System.Xml;
 
 namespace HotChai.Serialization.Xml
 {
-    public sealed class XmlObjectReader : ObjectReader
+    public sealed class XmlObjectReader : ObjectReader, ISerializationInspector
     {
         private XmlReader _reader;
         private InspectorStream _stream;
         private bool _peeking;
+        private ISerializationInspector _inspector;
 
         public XmlObjectReader(
             Stream stream)
@@ -38,31 +39,51 @@ namespace HotChai.Serialization.Xml
             }
 
             this._stream = new InspectorStream(stream);
-            this._reader = XmlReader.Create(
-                stream,
-                new XmlReaderSettings()
-                {
-                    ConformanceLevel = ConformanceLevel.Fragment,
-                    CheckCharacters = false,
-                });
+
+            // HACK: XmlReader seems to clone the stream so setting the Inspector
+            // property on this._stream later does not affect XmlReader.
+            // To workaround, we implement the inspector interface and forward 
+            // as appropriate.
+            this._stream.Inspector = this;
         }
 
         public override ISerializationInspector Inspector
         {
-            get { return this._stream.Inspector; }
+            get { return this._inspector; }
 
-            set { this._stream.Inspector = value; }
+            set { this._inspector = value; }
+        }
+
+        private XmlReader Reader
+        {
+            get
+            {
+                if (null == this._reader)
+                {
+                    // NOTE: XmlReader reads from the underlying stream on initialization,
+                    // before the Inspector property can be set. So, it must be lazily created.
+                    this._reader = XmlReader.Create(
+                        this._stream,
+                        new XmlReaderSettings()
+                        {
+                            ConformanceLevel = ConformanceLevel.Fragment,
+                            CheckCharacters = false,
+                        });
+                }
+
+                return this._reader;
+            }
         }
 
         protected override bool ReadStartObjectToken()
         {
             ReadStartElement();
 
-            if ((this._reader.Name == XmlToken.ObjectElement) && (this._reader.IsStartElement()))
+            if ((this.Reader.Name == XmlToken.ObjectElement) && (this.Reader.IsStartElement()))
             {
                 return true;
             }
-            else if ((this._reader.Name == XmlToken.NullElement) && (this._reader.IsEmptyElement))
+            else if ((this.Reader.Name == XmlToken.NullElement) && (this.Reader.IsEmptyElement))
             {
                 return false;
             }
@@ -74,27 +95,27 @@ namespace HotChai.Serialization.Xml
 
         protected override bool ReadFirstObjectMemberKey()
         {
-            if ((this._reader.Name == XmlToken.ObjectElement)
-                && (this._reader.IsEmptyElement))
+            if ((this.Reader.Name == XmlToken.ObjectElement)
+                && (this.Reader.IsEmptyElement))
             {
                 return false;
             }
 
             Peek();
 
-            if (this._reader.Name == XmlToken.ObjectElement)
+            if (this.Reader.Name == XmlToken.ObjectElement)
             {
                 return false;
             }
 
             ReadStartElement();
 
-            if (this._reader.Name != XmlToken.MemberElement)
+            if (this.Reader.Name != XmlToken.MemberElement)
             {
                 throw new InvalidOperationException();
             }
 
-            string memberName = this._reader.GetAttribute(XmlToken.MemberKeyAttribute);
+            string memberName = this.Reader.GetAttribute(XmlToken.MemberKeyAttribute);
 
             this.MemberKey = int.Parse(memberName, CultureInfo.InvariantCulture);
 
@@ -105,7 +126,7 @@ namespace HotChai.Serialization.Xml
         {
             this.ReadStartElement();
 
-            if ((this._reader.Name != XmlToken.MemberElement) || (this._reader.IsStartElement()))
+            if ((this.Reader.Name != XmlToken.MemberElement) || (this.Reader.IsStartElement()))
             {
                 throw new InvalidOperationException();
             }
@@ -115,8 +136,8 @@ namespace HotChai.Serialization.Xml
 
         protected override void ReadEndObjectToken()
         {
-            if ((this._reader.Name == XmlToken.ObjectElement)
-                && (this._reader.IsEmptyElement))
+            if ((this.Reader.Name == XmlToken.ObjectElement)
+                && (this.Reader.IsEmptyElement))
             {
                 return;
             }
@@ -128,11 +149,11 @@ namespace HotChai.Serialization.Xml
         {
             ReadStartElement();
 
-            if (this._reader.Name == XmlToken.ArrayElement)
+            if (this.Reader.Name == XmlToken.ArrayElement)
             {
                 return true;
             }
-            else if (this._reader.Name == XmlToken.NullElement)
+            else if (this.Reader.Name == XmlToken.NullElement)
             {
                 return false;
             }
@@ -144,8 +165,8 @@ namespace HotChai.Serialization.Xml
 
         protected override bool ReadToFirstArrayValue()
         {
-            if ((this._reader.Name == XmlToken.ArrayElement)
-                && (this._reader.IsEmptyElement))
+            if ((this.Reader.Name == XmlToken.ArrayElement)
+                && (this.Reader.IsEmptyElement))
             {
                 // Empty array (<array />)
                 return false;
@@ -158,21 +179,21 @@ namespace HotChai.Serialization.Xml
         {
             Peek();
 
-            if ((this._reader.Name == XmlToken.ArrayElement)
-                && (this._reader.NodeType == XmlNodeType.EndElement))
+            if ((this.Reader.Name == XmlToken.ArrayElement)
+                && (this.Reader.NodeType == XmlNodeType.EndElement))
             {
                 return false;
             }
 
-            if ((this._reader.Name == XmlToken.NullElement)
-                && (this._reader.IsEmptyElement))
+            if ((this.Reader.Name == XmlToken.NullElement)
+                && (this.Reader.IsEmptyElement))
             {
                 return true;
             }
 
-            if ((this._reader.Name != XmlToken.ValueElement)
-                && (this._reader.Name != XmlToken.ObjectElement)
-                && (this._reader.Name != XmlToken.ArrayElement))
+            if ((this.Reader.Name != XmlToken.ValueElement)
+                && (this.Reader.Name != XmlToken.ObjectElement)
+                && (this.Reader.Name != XmlToken.ArrayElement))
             {
                 throw new InvalidOperationException();
             }
@@ -182,8 +203,8 @@ namespace HotChai.Serialization.Xml
 
         protected override void ReadEndArrayToken()
         {
-            if ((this._reader.Name == XmlToken.ArrayElement)
-                && (this._reader.IsEmptyElement))
+            if ((this.Reader.Name == XmlToken.ArrayElement)
+                && (this.Reader.IsEmptyElement))
             {
                 // Empty array (<array />)
                 return;
@@ -270,33 +291,33 @@ namespace HotChai.Serialization.Xml
         {
             ReadStartElement();
 
-            if (this._reader.Name == XmlToken.NullElement)
+            if (this.Reader.Name == XmlToken.NullElement)
             {
                 ReadPeekedEndElement(XmlToken.NullElement);
 
-                //this._reader.Read();
+                //this.Reader.Read();
 
                 return null;
             }
 
-            if (this._reader.Name != XmlToken.ValueElement)
+            if (this.Reader.Name != XmlToken.ValueElement)
             {
                 throw new InvalidOperationException();
             }
 
             string value;
-            if (this._reader.IsEmptyElement)
+            if (this.Reader.IsEmptyElement)
             {
                 value = String.Empty;
             }
             else
             {
-                this._reader.Read();
-                value = this._reader.ReadContentAsString();
+                this.Reader.Read();
+                value = this.Reader.ReadContentAsString();
             }
 
-            if ((this._reader.Name != XmlToken.ValueElement)
-                || ((this._reader.NodeType != XmlNodeType.EndElement) && (!this._reader.IsEmptyElement)))
+            if ((this.Reader.Name != XmlToken.ValueElement)
+                || ((this.Reader.NodeType != XmlNodeType.EndElement) && (!this.Reader.IsEmptyElement)))
             {
                 throw new InvalidOperationException();
             }
@@ -308,11 +329,11 @@ namespace HotChai.Serialization.Xml
         {
             Peek();
 
-            if (this._reader.Name == XmlToken.ObjectElement)
+            if (this.Reader.Name == XmlToken.ObjectElement)
             {
                 return MemberValueType.Object;
             }
-            else if (this._reader.Name == XmlToken.ArrayElement)
+            else if (this.Reader.Name == XmlToken.ArrayElement)
             {
                 return MemberValueType.Array;
             }
@@ -323,8 +344,8 @@ namespace HotChai.Serialization.Xml
         protected override void SkipPrimitiveValue()
         {
             // Expect to be on "value" or "null" start element
-            if ((this._reader.Name != XmlToken.ValueElement)
-                && (this._reader.Name != XmlToken.NullElement))
+            if ((this.Reader.Name != XmlToken.ValueElement)
+                && (this.Reader.Name != XmlToken.NullElement))
             {
                 throw new InvalidOperationException();
             }
@@ -334,25 +355,25 @@ namespace HotChai.Serialization.Xml
                 this._peeking = false;
             }
 
-            if (this._reader.Name == XmlToken.NullElement)
+            if (this.Reader.Name == XmlToken.NullElement)
             {
                 // Expect to be an end element (<null />)
-                if (!this._reader.IsEmptyElement)
+                if (!this.Reader.IsEmptyElement)
                 {
                     throw new InvalidOperationException();
                 }
             }
-            else if (this._reader.Name == XmlToken.ValueElement)
+            else if (this.Reader.Name == XmlToken.ValueElement)
             {
-                if (!this._reader.IsEmptyElement)
+                if (!this.Reader.IsEmptyElement)
                 {
                     ReadStartElement();
 
                     // Check for an empty value element
-                    if (this._reader.Name == XmlToken.ValueElement)
+                    if (this.Reader.Name == XmlToken.ValueElement)
                     {
                         // Expect to be an end element (</value>)
-                        if (this._reader.NodeType != XmlNodeType.EndElement)
+                        if (this.Reader.NodeType != XmlNodeType.EndElement)
                         {
                             throw new InvalidOperationException();
                         }
@@ -360,18 +381,18 @@ namespace HotChai.Serialization.Xml
                     else
                     {
                         // Check for expected value content
-                        if ((this._reader.NodeType != XmlNodeType.Text)
-                            && (this._reader.Name != XmlToken.ObjectElement)
-                            && (this._reader.Name != XmlToken.ArrayElement))
+                        if ((this.Reader.NodeType != XmlNodeType.Text)
+                            && (this.Reader.Name != XmlToken.ObjectElement)
+                            && (this.Reader.Name != XmlToken.ArrayElement))
                         {
                             // Unexpected nested value
                             throw new InvalidOperationException();
                         }
 
-                        this._reader.Skip();
+                        this.Reader.Skip();
 
-                        if ((this._reader.Name != XmlToken.ValueElement)
-                            || (this._reader.NodeType != XmlNodeType.EndElement))
+                        if ((this.Reader.Name != XmlToken.ValueElement)
+                            || (this.Reader.NodeType != XmlNodeType.EndElement))
                         {
                             throw new InvalidOperationException();
                         }
@@ -392,7 +413,7 @@ namespace HotChai.Serialization.Xml
                 return;
             }
 
-            this._reader.Read();
+            this.Reader.Read();
 
             this._peeking = true;
         }
@@ -401,7 +422,7 @@ namespace HotChai.Serialization.Xml
         {
             if (this._peeking)
             {
-                if (!this._reader.IsStartElement())
+                if (!this.Reader.IsStartElement())
                 {
                     throw new InvalidOperationException();
                 }
@@ -410,9 +431,9 @@ namespace HotChai.Serialization.Xml
                 return;
             }
 
-            this._reader.Read();
+            this.Reader.Read();
 
-            //if (!this._reader.IsStartElement())
+            //if (!this.Reader.IsStartElement())
             //{
             //    throw new InvalidOperationException();
             //}
@@ -423,18 +444,31 @@ namespace HotChai.Serialization.Xml
         {
             if (this._peeking)
             {
-                if (this._reader.IsStartElement())
+                if (this.Reader.IsStartElement())
                 {
                     throw new InvalidOperationException();
                 }
 
-                if (this._reader.Name != name)
+                if (this.Reader.Name != name)
                 {
                     throw new InvalidOperationException("Unexpected element name.");
                 }
 
                 this._peeking = false;
                 return;
+            }
+        }
+
+        void ISerializationInspector.AddContent(
+            byte[] bytes,
+            int offset,
+            int count)
+        {
+            // Forward to the outer inspector if set
+            ISerializationInspector inspector = this.Inspector;
+            if (null != inspector)
+            {
+                inspector.AddContent(bytes, offset, count);
             }
         }
     }

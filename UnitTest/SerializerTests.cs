@@ -289,10 +289,14 @@ namespace HotChai.Serialization.UnitTest
 
             byte[] serialized;
 
+            var writerInspector = new TestSerializationInspector();
+
             // Serialize the test object to a byte array
             using (var stream = new MemoryStream())
             {
                 var writer = factory.CreateWriter(stream);
+
+                writer.Inspector = writerInspector;
 
                 writeStopWatch.Start();
 
@@ -307,12 +311,23 @@ namespace HotChai.Serialization.UnitTest
             Debug.WriteLine(writeDump);
             Test.Output("{0} writer wrote {1} bytes in {2}ms", factory.Name, serialized.Length, writeStopWatch.ElapsedMilliseconds);
 
+            // Validate inspector stream
+            byte[] writerInspectorBytes = writerInspector.ToByteArray();
+            if (!ArrayComparer<byte>.Equals(writerInspectorBytes, serialized))
+            {
+                throw new InvalidOperationException("ISerializationInspector byte stream does not match the serialized byte stream.");
+            }
+
+            var readerInspector = new TestSerializationInspector();
+
             SimpleObject readObject = null;
 
             // Deserialize the test object from a byte array
             using (var stream = new MemoryStream(serialized))
             {
                 var reader = factory.CreateReader(stream);
+
+                reader.Inspector = readerInspector;
 
                 readStopWatch.Start();
 
@@ -325,6 +340,13 @@ namespace HotChai.Serialization.UnitTest
 
             // Compare objects
             writeObject.VerifyIsEqual(readObject);
+
+            // Validate inspector stream
+            byte[] readerInspectorBytes = readerInspector.ToByteArray();
+            if (!ArrayComparer<byte>.Equals(readerInspectorBytes, serialized))
+            {
+                throw new InvalidOperationException("ISerializationInspector byte stream does not match the serialized byte stream.");
+            }
         }
 
         private void TestComplexObjectSerialization(
@@ -339,10 +361,14 @@ namespace HotChai.Serialization.UnitTest
 
             byte[] serialized;
 
+            var writerInspector = new TestSerializationInspector();
+
             // Serialize the test object to a byte array
             using (var stream = new MemoryStream(BufferSizeInBytes))
             {
                 var writer = factory.CreateWriter(stream);
+
+                writer.Inspector = writerInspector;
 
                 writeStopWatch.Start();
 
@@ -358,12 +384,23 @@ namespace HotChai.Serialization.UnitTest
 
             Test.Output("{0} writer wrote {1} bytes in {2}ms", factory.Name, serialized.Length, writeStopWatch.ElapsedMilliseconds);
 
+            // Validate inspector stream
+            byte[] writerInspectorBytes = writerInspector.ToByteArray();
+            if (!ArrayComparer<byte>.Equals(writerInspectorBytes, serialized))
+            {
+                throw new InvalidOperationException("ISerializationInspector byte stream does not match the serialized byte stream.");
+            }
+
+            var readerInspector = new TestSerializationInspector();
+
             ComplexObject readObject = null;
 
             // Deserialize the test object from a byte array
             using (var stream = new MemoryStream(serialized))
             {
                 var reader = factory.CreateReader(stream);
+
+                reader.Inspector = readerInspector;
 
                 readStopWatch.Start();
 
@@ -393,6 +430,33 @@ namespace HotChai.Serialization.UnitTest
 
             // Compare objects
             writeObject.VerifyIsEqual(readObject);
+
+            // Validate inspector stream
+            byte[] readerInspectorBytes = readerInspector.ToByteArray();
+            if (!ArrayComparer<byte>.Equals(readerInspectorBytes, serialized))
+            {
+                throw new InvalidOperationException("ISerializationInspector byte stream does not match the serialized byte stream.");
+            }
         }
+
+        internal sealed class TestSerializationInspector : ISerializationInspector
+        {
+            private MemoryStream _stream = new MemoryStream();
+
+            public TestSerializationInspector()
+            {
+            }
+
+            public void AddContent(byte[] bytes, int offset, int count)
+            {
+                this._stream.Write(bytes, offset, count);
+            }
+
+            public byte[] ToByteArray()
+            {
+                return this._stream.ToArray();
+            }
+        }
+
     }
 }

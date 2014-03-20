@@ -57,7 +57,7 @@ namespace HotChai.Serialization.Json
             }
 
             this._stream = new InspectorStream(stream);
-            this._reader = new BinaryReader(stream, Encoding.UTF8);
+            this._reader = new BinaryReader(this._stream, Encoding.UTF8);
         }
 
         public override ISerializationInspector Inspector

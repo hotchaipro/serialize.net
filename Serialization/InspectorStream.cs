@@ -42,6 +42,7 @@ namespace HotChai.Serialization
             {
                 return this._inspector;
             }
+
             set
             {
                 this._inspector = value;
