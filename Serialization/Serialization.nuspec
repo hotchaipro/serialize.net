@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>HotChai.Serialization</id>
-    <version>1.1.0</version>
+    <version>1.2.0</version>
     <title>Serialize.NET</title>
     <authors>David Taylor</authors>
     <owners>David Taylor, Hot Chai Productions, LLC</owners>
@@ -10,7 +10,7 @@
     <projectUrl>https://github.com/hotchai/serialize.net</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>A cross-platform library for efficiently serializing basic .NET types. Supports JSON, XML, Bencode, and PBON formats.</description>
-    <releaseNotes>New ObjectReader extension methods, ObjectWriter is now validating, and fixes for ISerializationInspector.</releaseNotes>
+    <releaseNotes>DateTime and DataTimeOffset extension methods ensure values are UTC.</releaseNotes>
     <copyright>Copyright 2014, David Taylor, Hot Chai Productions, LLC</copyright>
     <tags>serialize .NET PBON JSON XML Bencode</tags>
   </metadata>
