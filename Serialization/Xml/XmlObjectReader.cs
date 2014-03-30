@@ -23,12 +23,11 @@ using System.Xml;
 
 namespace HotChai.Serialization.Xml
 {
-    public sealed class XmlObjectReader : ObjectReader, ISerializationInspector
+    public sealed class XmlObjectReader : ObjectReader
     {
         private XmlReader _reader;
         private InspectorStream _stream;
         private bool _peeking;
-        private ISerializationInspector _inspector;
 
         public XmlObjectReader(
             Stream stream)
@@ -39,19 +38,13 @@ namespace HotChai.Serialization.Xml
             }
 
             this._stream = new InspectorStream(stream);
-
-            // HACK: XmlReader seems to clone the stream so setting the Inspector
-            // property on this._stream later does not affect XmlReader.
-            // To workaround, we implement the inspector interface and forward 
-            // as appropriate.
-            this._stream.Inspector = this;
         }
 
         public override ISerializationInspector Inspector
         {
-            get { return this._inspector; }
+            get { return this._stream.Inspector; }
 
-            set { this._inspector = value; }
+            set { this._stream.Inspector = value; }
         }
 
         private XmlReader Reader
@@ -62,6 +55,11 @@ namespace HotChai.Serialization.Xml
                 {
                     // NOTE: XmlReader reads from the underlying stream on initialization,
                     // before the Inspector property can be set. So, it must be lazily created.
+                    // NOTE: XmlReader also reads from the stream in chunks, so it will read
+                    // past the last byte of a serialized object in a stream and break 
+                    // ISerializationInspector as well as prevent a new instance of XmlObjectReader 
+                    // from deserializing another object from the same stream.
+                    // CONSIDER: Switch to BinaryReader.
                     this._reader = XmlReader.Create(
                         this._stream,
                         new XmlReaderSettings()
@@ -456,19 +454,6 @@ namespace HotChai.Serialization.Xml
 
                 this._peeking = false;
                 return;
-            }
-        }
-
-        void ISerializationInspector.AddContent(
-            byte[] bytes,
-            int offset,
-            int count)
-        {
-            // Forward to the outer inspector if set
-            ISerializationInspector inspector = this.Inspector;
-            if (null != inspector)
-            {
-                inspector.AddContent(bytes, offset, count);
             }
         }
     }
