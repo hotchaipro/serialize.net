@@ -762,6 +762,18 @@ namespace HotChai.Serialization
             return TimeSpan.FromTicks(ticks);
         }
 
+        public static DateTime ReadValueAsDateTime(
+            this IObjectReader reader)
+        {
+            if (reader == null)
+            {
+                throw new ArgumentNullException("reader");
+            }
+
+            long ticks = reader.ReadValueAsInt64();
+            return new DateTime(ticks, DateTimeKind.Utc);
+        }
+
         public static DateTimeOffset ReadValueAsDateTimeOffset(
             this IObjectReader reader)
         {

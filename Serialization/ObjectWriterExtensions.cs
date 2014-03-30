@@ -506,11 +506,33 @@ namespace HotChai.Serialization
 
         public static void WriteValue(
             this IObjectWriter writer,
+            DateTime value)
+        {
+            if (null == writer)
+            {
+                throw new ArgumentNullException("writer");
+            }
+
+            if (value.Kind != DateTimeKind.Utc)
+            {
+                throw new NotSupportedException("DateTime must be converted to UTC before serializing.");
+            }
+
+            writer.WriteValue(value.Ticks);
+        }
+
+        public static void WriteValue(
+            this IObjectWriter writer,
             DateTimeOffset value)
         {
             if (null == writer)
             {
                 throw new ArgumentNullException("writer");
+            }
+
+            if (value.Offset != TimeSpan.Zero)
+            {
+                throw new NotSupportedException("DateTimeOffset must be converted to UTC before serializing.");
             }
 
             writer.WriteValue(value.UtcTicks);
