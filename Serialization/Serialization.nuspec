@@ -2,15 +2,15 @@
 <package >
   <metadata>
     <id>HotChai.Serialization</id>
-    <version>1.3.0</version>
+    <version>1.4.0</version>
     <title>Serialize.NET</title>
     <authors>David Taylor</authors>
     <owners>David Taylor, Hot Chai Productions, LLC</owners>
     <licenseUrl>https://github.com/hotchai/serialize.net/blob/master/license.txt</licenseUrl>
     <projectUrl>https://github.com/hotchai/serialize.net</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>A cross-platform library for efficiently serializing basic .NET types. Supports JSON, XML, Bencode, and PBON formats.</description>
-    <releaseNotes>Update portable library target to Profile111.</releaseNotes>
+    <description>A cross-platform library for efficiently serializing basic .NET types. Supports JSON, XML, Bencode, and PBON formats on Windows, Xamarin iOS and Android platforms.</description>
+    <releaseNotes>Update portable library target to netstandard 1.0.</releaseNotes>
     <copyright>Copyright 2014-2016, David Taylor, Hot Chai Productions, LLC</copyright>
     <tags>serialize .NET PBON JSON XML Bencode</tags>
   </metadata>
