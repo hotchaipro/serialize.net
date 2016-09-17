@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>HotChai.Serialization</id>
-    <version>1.4.0</version>
+    <version>1.4.1</version>
     <title>Serialize.NET</title>
     <authors>David Taylor</authors>
     <owners>David Taylor, Hot Chai Productions, LLC</owners>
