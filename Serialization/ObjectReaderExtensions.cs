@@ -750,6 +750,18 @@ namespace HotChai.Serialization
 
         #region Extended types
 
+        public static Guid ReadValueAsGuid(
+            this IObjectReader reader)
+        {
+            if (reader == null)
+            {
+                throw new ArgumentNullException("reader");
+            }
+
+            byte[] guidBytes = reader.ReadValueAsBytes(16);
+            return new Guid(guidBytes);
+        }
+
         public static TimeSpan ReadValueAsTimeSpan(
             this IObjectReader reader)
         {

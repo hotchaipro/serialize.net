@@ -494,6 +494,73 @@ namespace HotChai.Serialization
 
         public static void WriteValue(
             this IObjectWriter writer,
+            Guid value)
+        {
+            if (null == writer)
+            {
+                throw new ArgumentNullException("writer");
+            }
+
+            writer.WriteValue(value.ToByteArray());
+        }
+
+        public static void WriteMember(
+            this IObjectWriter writer,
+            int key,
+            Guid value)
+        {
+            if (null == writer)
+            {
+                throw new ArgumentNullException("writer");
+            }
+
+            writer.WriteStartMember(key);
+            writer.WriteValue(value);
+            writer.WriteEndMember();
+        }
+
+        public static void WriteMember(
+            this IObjectWriter writer,
+            int key,
+            IEnumerable<Guid> value)
+        {
+            if (null == writer)
+            {
+                throw new ArgumentNullException("writer");
+            }
+
+            writer.WriteStartMember(key);
+            writer.WriteArray(value);
+            writer.WriteEndMember();
+        }
+
+        public static void WriteArray(
+            this IObjectWriter writer,
+            IEnumerable<Guid> array)
+        {
+            if (null == writer)
+            {
+                throw new ArgumentNullException("writer");
+            }
+
+            if (array == null)
+            {
+                writer.WriteNullValue();
+                return;
+            }
+
+            writer.WriteStartArray();
+
+            foreach (var value in array)
+            {
+                writer.WriteValue(value);
+            }
+
+            writer.WriteEndArray();
+        }
+
+        public static void WriteValue(
+            this IObjectWriter writer,
             TimeSpan value)
         {
             if (null == writer)
@@ -502,6 +569,61 @@ namespace HotChai.Serialization
             }
 
             writer.WriteValue(value.Ticks);
+        }
+
+        public static void WriteMember(
+            this IObjectWriter writer,
+            int key,
+            TimeSpan value)
+        {
+            if (null == writer)
+            {
+                throw new ArgumentNullException("writer");
+            }
+
+            writer.WriteStartMember(key);
+            writer.WriteValue(value);
+            writer.WriteEndMember();
+        }
+
+        public static void WriteMember(
+            this IObjectWriter writer,
+            int key,
+            IEnumerable<TimeSpan> value)
+        {
+            if (null == writer)
+            {
+                throw new ArgumentNullException("writer");
+            }
+
+            writer.WriteStartMember(key);
+            writer.WriteArray(value);
+            writer.WriteEndMember();
+        }
+
+        public static void WriteArray(
+            this IObjectWriter writer,
+            IEnumerable<TimeSpan> array)
+        {
+            if (null == writer)
+            {
+                throw new ArgumentNullException("writer");
+            }
+
+            if (array == null)
+            {
+                writer.WriteNullValue();
+                return;
+            }
+
+            writer.WriteStartArray();
+
+            foreach (var value in array)
+            {
+                writer.WriteValue(value);
+            }
+
+            writer.WriteEndArray();
         }
 
         public static void WriteValue(
@@ -521,6 +643,61 @@ namespace HotChai.Serialization
             writer.WriteValue(value.Ticks);
         }
 
+        public static void WriteMember(
+            this IObjectWriter writer,
+            int key,
+            DateTime value)
+        {
+            if (null == writer)
+            {
+                throw new ArgumentNullException("writer");
+            }
+
+            writer.WriteStartMember(key);
+            writer.WriteValue(value);
+            writer.WriteEndMember();
+        }
+
+        public static void WriteMember(
+            this IObjectWriter writer,
+            int key,
+            IEnumerable<DateTime> value)
+        {
+            if (null == writer)
+            {
+                throw new ArgumentNullException("writer");
+            }
+
+            writer.WriteStartMember(key);
+            writer.WriteArray(value);
+            writer.WriteEndMember();
+        }
+
+        public static void WriteArray(
+            this IObjectWriter writer,
+            IEnumerable<DateTime> array)
+        {
+            if (null == writer)
+            {
+                throw new ArgumentNullException("writer");
+            }
+
+            if (array == null)
+            {
+                writer.WriteNullValue();
+                return;
+            }
+
+            writer.WriteStartArray();
+
+            foreach (var value in array)
+            {
+                writer.WriteValue(value);
+            }
+
+            writer.WriteEndArray();
+        }
+
         public static void WriteValue(
             this IObjectWriter writer,
             DateTimeOffset value)
@@ -536,6 +713,61 @@ namespace HotChai.Serialization
             }
 
             writer.WriteValue(value.UtcTicks);
+        }
+
+        public static void WriteMember(
+            this IObjectWriter writer,
+            int key,
+            DateTimeOffset value)
+        {
+            if (null == writer)
+            {
+                throw new ArgumentNullException("writer");
+            }
+
+            writer.WriteStartMember(key);
+            writer.WriteValue(value);
+            writer.WriteEndMember();
+        }
+
+        public static void WriteMember(
+            this IObjectWriter writer,
+            int key,
+            IEnumerable<DateTimeOffset> value)
+        {
+            if (null == writer)
+            {
+                throw new ArgumentNullException("writer");
+            }
+
+            writer.WriteStartMember(key);
+            writer.WriteArray(value);
+            writer.WriteEndMember();
+        }
+
+        public static void WriteArray(
+            this IObjectWriter writer,
+            IEnumerable<DateTimeOffset> array)
+        {
+            if (null == writer)
+            {
+                throw new ArgumentNullException("writer");
+            }
+
+            if (array == null)
+            {
+                writer.WriteNullValue();
+                return;
+            }
+
+            writer.WriteStartArray();
+
+            foreach (var value in array)
+            {
+                writer.WriteValue(value);
+            }
+
+            writer.WriteEndArray();
         }
 
         #endregion Extended types
