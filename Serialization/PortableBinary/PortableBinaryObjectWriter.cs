@@ -349,7 +349,10 @@ namespace HotChai.Serialization.PortableBinary
                 Array.Reverse(bytes);
             }
             WriteLength(bytes.Length);
-            this._writer.Write(bytes, 0, bytes.Length);
+            if (bytes.Length > 0)
+            {
+                this._writer.Write(bytes, 0, bytes.Length);
+            }
         }
 
         protected override void WritePrimitiveValue(
@@ -362,7 +365,10 @@ namespace HotChai.Serialization.PortableBinary
                 Array.Reverse(bytes);
             }
             WriteLength(bytes.Length);
-            this._writer.Write(bytes, 0, bytes.Length);
+            if (bytes.Length > 0)
+            {
+                this._writer.Write(bytes, 0, bytes.Length);
+            }
         }
 
         protected override void WritePrimitiveValue(
@@ -375,7 +381,10 @@ namespace HotChai.Serialization.PortableBinary
             else
             {
                 WriteLength(value.Length);
-                this._writer.Write(value, 0, value.Length);
+                if (value.Length > 0)
+                {
+                    this._writer.Write(value, 0, value.Length);
+                }
             }
         }
 
@@ -390,7 +399,10 @@ namespace HotChai.Serialization.PortableBinary
             {
                 byte[] bytes = Encoding.UTF8.GetBytes(value);
                 WriteLength(bytes.Length);
-                this._writer.Write(bytes, 0, bytes.Length);
+                if (bytes.Length > 0)
+                {
+                    this._writer.Write(bytes, 0, bytes.Length);
+                }
             }
         }
 
