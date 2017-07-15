@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>34d526ef-db94-4083-bb44-459e6f908fb4</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Serialize.Net</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)InspectorStream.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IObjectReader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IObjectWriter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ISerializationInspector.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MemberValueType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ObjectReader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ObjectReaderExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ObjectWriter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ObjectWriterExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PortableBinary\PortableBinaryObjectReader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PortableBinary\PortableBinaryObjectWriter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PortableBinary\PortableBinaryToken.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)StateManager.cs" />
+  </ItemGroup>
+</Project>
