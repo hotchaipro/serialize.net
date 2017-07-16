@@ -26,7 +26,6 @@ namespace HotChai.Serialization.Bencoding
     {
         private InspectorStream _stream;
         private BinaryReader _reader;
-        private StringBuilder _string = new StringBuilder();
         private char _peekChar;
         private bool _peeking;
 
