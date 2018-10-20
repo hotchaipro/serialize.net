@@ -19,17 +19,18 @@ using System;
 
 namespace HotChai.Serialization.Json
 {
-    internal static class JsonToken
+    internal enum JsonToken
     {
-        internal const string StartObject = "{";
-        internal const string EndObject = "}";
-        internal const string StartArray = "[";
-        internal const string EndArray = "]";
-        internal const string Null = "null";
-        internal const string True = "true";
-        internal const string False = "false";
-        //internal const string Quote = "\"";
-        internal const string Colon = ":";
-        internal const string Comma = ",";
+        StartObject = 1,
+        EndObject = 2,
+        StartArray = 3,
+        EndArray = 4,
+        Colon = 5,
+        Comma = 6,
+        String = 7,
+        Number = 8,
+        Null = 9,
+        True = 10,
+        False = 11,
     }
 }

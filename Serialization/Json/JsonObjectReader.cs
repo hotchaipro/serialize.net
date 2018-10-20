@@ -26,16 +26,14 @@ namespace HotChai.Serialization.Json
     {
         private BinaryReader _reader;
         private InspectorStream _stream;
-        private StringBuilder _stringBuilder = new StringBuilder();
-        private string _token;
-        private bool _peekingToken;
+        private StringBuilder _stringBuilder;
         private char _peekChar;
         private bool _peekingChar;
 
         // Buffers to support the workaround for reading UTF8 characters
         // that cannot be encoded as a single .NET char
-        private byte[] _utf8Buffer = new byte[6];
-        private char[] _charBuffer = new char[2];
+        private byte[] _utf8Buffer;
+        private char[] _charBuffer;
 
         private static readonly uint[] HexValue = new uint[]
         {
@@ -56,6 +54,9 @@ namespace HotChai.Serialization.Json
                 throw new ArgumentNullException("stream");
             }
 
+            this._stringBuilder = new StringBuilder();
+            this._utf8Buffer = new byte[6];
+            this._charBuffer = new char[2];
             this._stream = new InspectorStream(stream);
             this._reader = new BinaryReader(this._stream, Encoding.UTF8);
         }
@@ -75,7 +76,7 @@ namespace HotChai.Serialization.Json
 
         protected override bool ReadStartObjectToken()
         {
-            string token = ReadToken();
+            var token = ReadToken();
             if (token == JsonToken.StartObject)
             {
                 return true;
@@ -90,24 +91,44 @@ namespace HotChai.Serialization.Json
             }
         }
 
-        protected override bool ReadNextObjectMemberKey()
+        protected override bool ReadFirstObjectMemberKey()
         {
-            string token = PeekToken();
+            var token = PeekToken();
 
             if (token == JsonToken.EndObject)
             {
                 return false;
             }
-            else if (token == JsonToken.Comma)
-            {
-                ReadComma();
-            }
 
-            string memberName = ReadString(20);
-
+            string memberName = ReadString(20, false);
             this.MemberKey = int.Parse(memberName, CultureInfo.InvariantCulture);
 
             ReadColon();
+
+            SkipWhiteSpace();
+
+            return true;
+        }
+
+        protected override bool ReadNextObjectMemberKey()
+        {
+            var token = PeekToken();
+
+            if (token == JsonToken.EndObject)
+            {
+                return false;
+            }
+
+            ReadComma();
+
+            SkipWhiteSpace();
+
+            string memberName = ReadString(20, false);
+            this.MemberKey = int.Parse(memberName, CultureInfo.InvariantCulture);
+
+            ReadColon();
+
+            SkipWhiteSpace();
 
             return true;
         }
@@ -119,7 +140,7 @@ namespace HotChai.Serialization.Json
 
         protected override bool ReadStartArrayToken()
         {
-            string token = ReadToken();
+            var token = ReadToken();
             if (token == JsonToken.StartArray)
             {
                 return true;
@@ -136,28 +157,28 @@ namespace HotChai.Serialization.Json
 
         protected override bool ReadToFirstArrayValue()
         {
-            string token = PeekToken();
+            var token = PeekToken();
             if (token == JsonToken.EndArray)
             {
                 return false;
             }
+
+            SkipWhiteSpace();
 
             return true;
         }
 
         protected override bool ReadToNextArrayValue()
         {
-            string token = PeekToken();
+            var token = PeekToken();
             if (token == JsonToken.EndArray)
             {
                 return false;
             }
-            else if (token != JsonToken.Comma)
-            {
-                throw new InvalidOperationException();
-            }
 
             ReadComma();
+
+            SkipWhiteSpace();
 
             return true;
         }
@@ -169,9 +190,7 @@ namespace HotChai.Serialization.Json
 
         protected override bool ReadPrimitiveValueAsBoolean()
         {
-            SkipWhiteSpace();
-
-            string token = ReadToken();
+            var token = ReadToken();
 
             if (token == JsonToken.True)
             {
@@ -233,7 +252,7 @@ namespace HotChai.Serialization.Json
             int byteQuota)
         {
             // NOTE: Increase quota to account for Base64 expansion
-            string base64 = ReadString(byteQuota * 4 / 3 + 2);
+            string base64 = ReadString(byteQuota * 4 / 3 + 2, true);
             if (base64 == null)
             {
                 return null;
@@ -245,12 +264,12 @@ namespace HotChai.Serialization.Json
         protected override string ReadPrimitiveValueAsString(
             int byteQuota)
         {
-            return ReadString(Encoding.UTF8.GetMaxCharCount(byteQuota));
+            return ReadString(Encoding.UTF8.GetMaxCharCount(byteQuota), true);
         }
 
         protected override MemberValueType PeekValueType()
         {
-            string token = PeekToken();
+            var token = PeekToken();
 
             if (token == JsonToken.StartObject)
             {
@@ -266,7 +285,7 @@ namespace HotChai.Serialization.Json
 
         protected override void SkipPrimitiveValue()
         {
-            string token = PeekToken();
+            var token = PeekToken();
 
             if (token == JsonToken.True)
             {
@@ -280,121 +299,30 @@ namespace HotChai.Serialization.Json
             {
                 ReadToken();
             }
+            else if (token == JsonToken.String)
+            {
+                SkipString();
+            }
             else
             {
-                char separator = PeekChar();
-                if (separator == '"')
-                {
-                    SkipString();
-                }
-                else
-                {
-                    SkipNumber();
-                }
+                SkipNumber();
             }
         }
 
         private void SkipWhiteSpace()
         {
-            //char c;
-            //do
-            //{
-            //    c = PeekChar();
-            //    if (!IsWhiteSpace(c))
-            //    {
-            //        break;
-            //    }
-
-            //    c = ReadChar();
-            //}
-            //while (true);
-        }
-
-        private string ReadToken()
-        {
-            if (this._peekingToken)
-            {
-                this._peekingToken = false;
-                return this._token;
-            }
-
-            SkipWhiteSpace();
-
-            string token;
-
             char c;
+            do
+            {
+                c = PeekChar();
+                if (!IsWhiteSpace(c))
+                {
+                    break;
+                }
 
-            c = PeekChar();
-
-            if (c == '{')
-            {
-                ReadChar();
-                token = JsonToken.StartObject;
+                c = ReadChar();
             }
-            else if (c == '}')
-            {
-                ReadChar();
-                token = JsonToken.EndObject;
-            }
-            else if (c == '[')
-            {
-                ReadChar();
-                token = JsonToken.StartArray;
-            }
-            else if (c == ']')
-            {
-                ReadChar();
-                token = JsonToken.EndArray;
-            }
-            else if (c == ':')
-            {
-                ReadChar();
-                token = JsonToken.Colon;
-            }
-            else if (c == ',')
-            {
-                ReadChar();
-                token = JsonToken.Comma;
-            }
-            else if (c == 'n')
-            {
-                // TODO: Validate
-                ReadChar();
-                ReadChar();
-                ReadChar();
-                ReadChar();
-
-                token = JsonToken.Null;
-            }
-            else if (c == 't')
-            {
-                // TODO: Validate
-                ReadChar();
-                ReadChar();
-                ReadChar();
-                ReadChar();
-
-                token = JsonToken.True;
-            }
-            else if (c == 'f')
-            {
-                // TODO: Validate
-                ReadChar();
-                ReadChar();
-                ReadChar();
-                ReadChar();
-                ReadChar();
-
-                token = JsonToken.False;
-            }
-            else
-            {
-                token = null;
-            }
-
-            this._token = token;
-
-            return token;
+            while (true);
         }
 
         private bool IsWhiteSpace(char c)
@@ -407,26 +335,141 @@ namespace HotChai.Serialization.Json
             return (((c >= '0') && (c <= '9')) || (c == '+') || (c == '-') || (c == '.') || (c == 'e') || (c == 'E'));
         }
 
-        private void ReadToken(string token)
+        private JsonToken ReadToken()
         {
-            string readToken = ReadToken();
+            SkipWhiteSpace();
+
+            JsonToken token;
+
+            char c = ReadChar();
+
+            if (c == '{')
+            {
+                token = JsonToken.StartObject;
+            }
+            else if (c == '}')
+            {
+                token = JsonToken.EndObject;
+            }
+            else if (c == '[')
+            {
+                token = JsonToken.StartArray;
+            }
+            else if (c == ']')
+            {
+                token = JsonToken.EndArray;
+            }
+            else if (c == ':')
+            {
+                token = JsonToken.Colon;
+            }
+            else if (c == '\"')
+            {
+                token = JsonToken.String;
+            }
+            else if (c == ',')
+            {
+                token = JsonToken.Comma;
+            }
+            else if (c == 'n')
+            {
+                // "null"
+                ReadChar('u');
+                ReadChar('l');
+                ReadChar('l');
+
+                token = JsonToken.Null;
+            }
+            else if (c == 't')
+            {
+                // "true"
+                ReadChar('r');
+                ReadChar('u');
+                ReadChar('e');
+
+                token = JsonToken.True;
+            }
+            else if (c == 'f')
+            {
+                // "false"
+                ReadChar('a');
+                ReadChar('l');
+                ReadChar('s');
+                ReadChar('e');
+
+                token = JsonToken.False;
+            }
+            else
+            {
+                token = JsonToken.Number;
+            }
+
+            return token;
+        }
+
+        private void ReadToken(JsonToken token)
+        {
+            var readToken = ReadToken();
             if (readToken != token)
             {
                 throw new InvalidOperationException("Unexpected token");
             }
         }
 
-        private string PeekToken()
+        private JsonToken PeekToken()
         {
-            if (!this._peekingToken)
+            SkipWhiteSpace();
+
+            JsonToken token;
+
+            char c = PeekChar();
+
+            if (c == '{')
             {
-                if (null != ReadToken())
-                {
-                    this._peekingToken = true;
-                }
+                token = JsonToken.StartObject;
+            }
+            else if (c == '}')
+            {
+                token = JsonToken.EndObject;
+            }
+            else if (c == '[')
+            {
+                token = JsonToken.StartArray;
+            }
+            else if (c == ']')
+            {
+                token = JsonToken.EndArray;
+            }
+            else if (c == ':')
+            {
+                token = JsonToken.Colon;
+            }
+            else if (c == '\"')
+            {
+                token = JsonToken.String;
+            }
+            else if (c == ',')
+            {
+                token = JsonToken.Comma;
+            }
+            else if (c == 'n')
+            {
+                token = JsonToken.Null;
+            }
+            else if (c == 't')
+            {
+                token = JsonToken.True;
+            }
+            else if (c == 'f')
+            {
+                token = JsonToken.False;
+            }
+            else
+            {
+                token = JsonToken.Number;
             }
 
-            return this._token;
+            return token;
         }
 
         private void ReadColon()
@@ -440,27 +483,23 @@ namespace HotChai.Serialization.Json
         }
 
         private string ReadString(
-            int charQuota)
+            int charQuota,
+            bool allowNull)
         {
-            SkipWhiteSpace();
-
             this._stringBuilder.Length = 0;
 
             char c = ReadChar();
 
-            // null
-            if (c == 'n')
+            if ((allowNull) && (c == 'n'))
             {
-                // TODO: Validate
-                ReadChar();
-                ReadChar();
-                ReadChar();
-
+                ReadChar('u');
+                ReadChar('l');
+                ReadChar('l');
                 return null;
             }
 
-            // Opening double quote
-            if (c != '"')
+            // Opening quote
+            if (c != '\"')
             {
                 throw new InvalidOperationException();
             }
@@ -491,9 +530,13 @@ namespace HotChai.Serialization.Json
 
                     c = ReadChar();
 
-                    if (c == '"')
+                    if (c == '\"')
                     {
                         this._stringBuilder.Append('\"');
+                    }
+                    else if (c == '\'')
+                    {
+                        this._stringBuilder.Append('\'');
                     }
                     else if (c == '\\')
                     {
@@ -549,8 +592,6 @@ namespace HotChai.Serialization.Json
 
         private string ReadNumber()
         {
-            SkipWhiteSpace();
-
             this._stringBuilder.Length = 0;
 
             char c;
@@ -578,7 +619,7 @@ namespace HotChai.Serialization.Json
         private void SkipString()
         {
             // TODO: Efficient skipping
-            ReadString(1024 * 1024);
+            ReadString(1024 * 1024, false);
         }
 
         private char PeekChar()
@@ -601,6 +642,15 @@ namespace HotChai.Serialization.Json
             }
 
             return this._reader.ReadChar();
+        }
+
+        private void ReadChar(
+            char c)
+        {
+            if (this.ReadChar() != c)
+            {
+                throw new Exception("Unexpected character.");
+            }
         }
 
         // NOTE: This is a workaround for the problem where BinaryReader

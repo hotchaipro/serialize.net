@@ -74,22 +74,22 @@ namespace HotChai.Serialization.Json
 
         protected override void WriteEndObjectToken()
         {
-            Write(JsonToken.EndObject);
+            Write('}');
         }
 
         protected override void WriteStartArrayToken()
         {
-            Write(JsonToken.StartArray);
+            Write('[');
         }
 
         protected override void WriteEndArrayToken()
         {
-            Write(JsonToken.EndArray);
+            Write(']');
         }
 
         protected override void WritePrimitiveNullValue()
         {
-            Write(JsonToken.Null);
+            Write("null");
         }
 
         protected override void WritePrimitiveValue(
@@ -97,11 +97,11 @@ namespace HotChai.Serialization.Json
         {
             if (value)
             {
-                Write(JsonToken.True);
+                Write("true");
             }
             else
             {
-                Write(JsonToken.False);
+                Write("false");
             }
         }
 
@@ -146,7 +146,7 @@ namespace HotChai.Serialization.Json
         {
             if (null == value)
             {
-                Write(JsonToken.Null);
+                WritePrimitiveNullValue();
             }
             else
             {
@@ -164,7 +164,7 @@ namespace HotChai.Serialization.Json
         {
             if (null == value)
             {
-                Write(JsonToken.Null);
+                WritePrimitiveNullValue();
             }
             else
             {
