@@ -16,7 +16,6 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #endregion License
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -26,8 +25,7 @@ namespace HotChai.Serialization.Json
     public sealed class JsonObjectWriter : ObjectWriter
     {
         private InspectorStream _stream;
-        private BinaryWriter _writer;
-        List<char> _surrogates = new List<char>();
+        private StreamWriter _writer;
 
         public JsonObjectWriter(
             Stream stream)
@@ -38,7 +36,9 @@ namespace HotChai.Serialization.Json
             }
 
             this._stream = new InspectorStream(stream);
-            this._writer = new BinaryWriter(this._stream, Encoding.UTF8);
+            this._writer = new StreamWriter(
+                this._stream,
+                new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true));
         }
 
         public override ISerializationInspector Inspector
@@ -64,8 +64,7 @@ namespace HotChai.Serialization.Json
         {
             Write('"');
             Write(memberKey.ToString(CultureInfo.InvariantCulture));
-            Write('"');
-            Write(':');
+            Write("\":");
         }
 
         protected override void WriteEndMemberToken()
@@ -171,58 +170,37 @@ namespace HotChai.Serialization.Json
                 Write('"');
                 foreach (char c in value)
                 {
-                    if (Char.IsSurrogate(c))
-                    {
-                        this._surrogates.Add(c);
-
-                        if (this._surrogates.Count >= 2)
-                        {
-                            this._writer.Write(this._surrogates.ToArray());
-                            this._surrogates.Clear();
-                        }
-
-                        continue;
-                    }
-
                     if (c == '\\')
                     {
-                        Write('\\');
-                        Write('\\');
+                        Write(@"\\");
                     }
                     else if (c == '"')
                     {
-                        Write('\\');
-                        Write('"');
+                        Write("\\\"");
                     }
                     else if (c == '\b')
                     {
-                        Write('\\');
-                        Write('b');
+                        Write(@"\b");
                     }
                     else if (c == '\f')
                     {
-                        Write('\\');
-                        Write('f');
+                        Write(@"\f");
                     }
                     else if (c == '\n')
                     {
-                        Write('\\');
-                        Write('n');
+                        Write(@"\n");
                     }
                     else if (c == '\r')
                     {
-                        Write('\\');
-                        Write('r');
+                        Write(@"\r");
                     }
                     else if (c == '\t')
                     {
-                        Write('\\');
-                        Write('t');
+                        Write(@"\t");
                     }
                     else if (Char.IsControl(c))
                     {
-                        Write('\\');
-                        Write('u');
+                        Write(@"\u");
                         Write(((ushort)c).ToString("x4"));
                     }
                     else
@@ -258,11 +236,7 @@ namespace HotChai.Serialization.Json
         private void Write(
             string value)
         {
-            // NOTE: BinaryWriter writes an unwanted length prefix for the String type,
-            // so we convert to a byte[] first as a workaround.
-            // TODO: Remove this workaround
-            byte[] bytes = Encoding.UTF8.GetBytes(value);
-            this._writer.Write(bytes);
+            this._writer.Write(value);
         }
     }
 }

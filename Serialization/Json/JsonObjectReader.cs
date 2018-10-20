@@ -24,16 +24,11 @@ namespace HotChai.Serialization.Json
 {
     public sealed class JsonObjectReader : ObjectReader
     {
-        private BinaryReader _reader;
+        private StreamReader _reader;
         private InspectorStream _stream;
         private StringBuilder _stringBuilder;
         private char _peekChar;
         private bool _peekingChar;
-
-        // Buffers to support the workaround for reading UTF8 characters
-        // that cannot be encoded as a single .NET char
-        private byte[] _utf8Buffer;
-        private char[] _charBuffer;
 
         private static readonly uint[] HexValue = new uint[]
         {
@@ -55,10 +50,11 @@ namespace HotChai.Serialization.Json
             }
 
             this._stringBuilder = new StringBuilder();
-            this._utf8Buffer = new byte[6];
-            this._charBuffer = new char[2];
             this._stream = new InspectorStream(stream);
-            this._reader = new BinaryReader(this._stream, Encoding.UTF8);
+            this._reader = new StreamReader(
+                this._stream,
+                new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true),
+                detectEncodingFromByteOrderMarks: true);
         }
 
         public override ISerializationInspector Inspector
@@ -504,19 +500,9 @@ namespace HotChai.Serialization.Json
                 throw new InvalidOperationException();
             }
 
-            int charCount;
-
             do
             {
-                charCount = ReadUtf8Character(this._charBuffer);
-                if (charCount > 1)
-                {
-                    // Surrogate pair
-                    this._stringBuilder.Append(this._charBuffer, 0, charCount);
-                    continue;
-                }
-
-                c = this._charBuffer[0];
+                c = ReadChar();
 
                 if (c == '\"')
                 {
@@ -626,7 +612,7 @@ namespace HotChai.Serialization.Json
         {
             if (!this._peekingChar)
             {
-                this._peekChar = this._reader.ReadChar();
+                this._peekChar = (char)this._reader.Read();
                 this._peekingChar = true;
             }
 
@@ -641,7 +627,7 @@ namespace HotChai.Serialization.Json
                 return this._peekChar;
             }
 
-            return this._reader.ReadChar();
+            return (char)this._reader.Read();
         }
 
         private void ReadChar(
@@ -651,37 +637,6 @@ namespace HotChai.Serialization.Json
             {
                 throw new Exception("Unexpected character.");
             }
-        }
-
-        // NOTE: This is a workaround for the problem where BinaryReader
-        // throws an exception when attempting to read a UTF-8 encoded 
-        // character that requires more than one Char to represent 
-        // (e.g., a surrogate pair).
-        private int ReadUtf8Character(
-            char[] charBuffer)
-        {
-            byte lengthByte = this._reader.ReadByte();
-            charBuffer[0] = (char)lengthByte;
-
-            if (lengthByte < 0x80)
-            {
-                return 1;
-            }
-
-            this._utf8Buffer[0] = lengthByte;
-            lengthByte <<= 1;
-
-            int i = 1;
-
-            while ((lengthByte & 0x80) == 0x80)
-            {
-                this._utf8Buffer[i] = this._reader.ReadByte();
-                i += 1;
-
-                lengthByte <<= 1;
-            };
-
-            return Encoding.UTF8.GetChars(this._utf8Buffer, 0, i, charBuffer, 0);
         }
     }
 }
