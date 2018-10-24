@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>c54cd91d-18dc-41c1-a1c1-d3adbab9c0f7</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>HotChai.Serialization.Xml</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)XmlObjectReader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)XmlObjectWriter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)XmlToken.cs" />
+  </ItemGroup>
+</Project>

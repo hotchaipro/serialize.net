@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>937000fa-a0d3-45f7-b9ae-cd8303a9a981</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>HotChai.Serialization.Json</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)JsonObjectReader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)JsonObjectWriter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)JsonToken.cs" />
+  </ItemGroup>
+</Project>

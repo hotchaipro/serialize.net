@@ -64,9 +64,9 @@
     <Compile Include="SimpleObject.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Serialization\Serialization.csproj">
-      <Project>{be780b2e-94d0-46d6-b9fb-4fb226077aff}</Project>
-      <Name>Serialization</Name>
+    <ProjectReference Include="..\Serialization\HotChai.Serialization.csproj">
+      <Project>{7c91fb45-4022-4cc4-9d5d-9b882aa1dbf2}</Project>
+      <Name>HotChai.Serialization</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>
