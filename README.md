@@ -23,4 +23,4 @@ Features
 For more information
 ====================
 
-See the [project wiki](https://github.com/hotchai/serialize.net/wiki).
+See the [project wiki](https://github.com/hotchaipro/serialize.net/wiki).
