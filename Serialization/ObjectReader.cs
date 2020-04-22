@@ -535,6 +535,15 @@ namespace HotChai.Serialization
                     throw new NotSupportedException("Unsupported value type.");
                 }
             }
+
+            public override bool MoveToNextArrayValue(ObjectReader reader)
+            {
+                // Skip the current value
+                reader.SkipValue();
+
+                // Move to the next member
+                return EndArrayValueState.State.MoveToNextArrayValue(reader);
+            }
         }
 
         private sealed class EndArrayValueState : ObjectReaderState
