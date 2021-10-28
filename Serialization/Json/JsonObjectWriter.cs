@@ -22,13 +22,21 @@ using System.Text;
 
 namespace HotChai.Serialization.Json
 {
+    [Flags]
+    public enum JsonFormatOptions
+    {
+        None = 0,
+        MemberNewlines = 1,
+    }
+
     public sealed class JsonObjectWriter : ObjectWriter
     {
         private InspectorStream _stream;
         private StreamWriter _writer;
 
         public JsonObjectWriter(
-            Stream stream)
+            Stream stream,
+            JsonFormatOptions formatOptions = JsonFormatOptions.None)
         {
             if (null == stream)
             {
@@ -39,6 +47,13 @@ namespace HotChai.Serialization.Json
             this._writer = new StreamWriter(
                 this._stream,
                 new UTF8Encoding(encoderShouldEmitUTF8Identifier: false, throwOnInvalidBytes: true));
+            this.FormatOptions = formatOptions;
+        }
+
+        public JsonFormatOptions FormatOptions
+        {
+            get;
+            set;
         }
 
         public override ISerializationInspector Inspector
@@ -62,6 +77,10 @@ namespace HotChai.Serialization.Json
         protected override void WriteStartMemberToken(
             int memberKey)
         {
+            if (this.FormatOptions.HasFlag(JsonFormatOptions.MemberNewlines))
+            {
+                Write("\r\n");
+            }
             Write('"');
             Write(memberKey.ToString(CultureInfo.InvariantCulture));
             Write("\":");
