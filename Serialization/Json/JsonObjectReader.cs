@@ -24,9 +24,9 @@ namespace HotChai.Serialization.Json
 {
     public sealed class JsonObjectReader : ObjectReader
     {
-        private StreamReader _reader;
-        private InspectorStream _stream;
-        private StringBuilder _stringBuilder;
+        private readonly StreamReader _reader;
+        private readonly InspectorStream _stream;
+        private readonly StringBuilder _stringBuilder;
         private char _peekChar;
         private bool _peekingChar;
 
@@ -316,7 +316,7 @@ namespace HotChai.Serialization.Json
                     break;
                 }
 
-                c = ReadChar();
+                ReadChar();
             }
             while (true);
         }

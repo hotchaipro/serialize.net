@@ -28,7 +28,7 @@ namespace HotChai.Serialization
     {
         private const int InvalidMemberKey = -1;
 
-        private Stack<ObjectReaderState> _state = new Stack<ObjectReaderState>();
+        private readonly Stack<ObjectReaderState> _state = new Stack<ObjectReaderState>();
         private int _memberKey = InvalidMemberKey;
 
         protected ObjectReader()

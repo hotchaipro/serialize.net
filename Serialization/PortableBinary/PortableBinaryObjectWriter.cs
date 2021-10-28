@@ -23,8 +23,8 @@ namespace HotChai.Serialization.PortableBinary
 {
     public sealed class PortableBinaryObjectWriter : ObjectWriter
     {
-        private InspectorStream _stream;
-        private BinaryWriter _writer;
+        private readonly InspectorStream _stream;
+        private readonly BinaryWriter _writer;
 
         public PortableBinaryObjectWriter(
             Stream stream)

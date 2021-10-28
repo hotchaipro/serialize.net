@@ -24,8 +24,8 @@ namespace HotChai.Serialization.Bencoding
 {
     public sealed class BencodingObjectReader : ObjectReader
     {
-        private InspectorStream _stream;
-        private BinaryReader _reader;
+        private readonly InspectorStream _stream;
+        private readonly BinaryReader _reader;
         private char _peekChar;
         private bool _peeking;
 

@@ -26,7 +26,7 @@ namespace HotChai.Serialization.Xml
     public sealed class XmlObjectReader : ObjectReader
     {
         private XmlReader _reader;
-        private InspectorStream _stream;
+        private readonly InspectorStream _stream;
         private bool _peeking;
 
         public XmlObjectReader(

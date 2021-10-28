@@ -22,7 +22,7 @@ namespace HotChai.Serialization
 {
     internal sealed class InspectorStream : Stream
     {
-        private Stream _innerStream;
+        private readonly Stream _innerStream;
         private ISerializationInspector _inspector;
 
         public InspectorStream(

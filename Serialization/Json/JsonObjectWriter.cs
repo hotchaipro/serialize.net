@@ -31,8 +31,8 @@ namespace HotChai.Serialization.Json
 
     public sealed class JsonObjectWriter : ObjectWriter
     {
-        private InspectorStream _stream;
-        private StreamWriter _writer;
+        private readonly InspectorStream _stream;
+        private readonly StreamWriter _writer;
 
         public JsonObjectWriter(
             Stream stream,

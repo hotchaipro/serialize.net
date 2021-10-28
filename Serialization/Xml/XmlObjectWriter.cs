@@ -25,8 +25,8 @@ namespace HotChai.Serialization.Xml
 {
     public sealed class XmlObjectWriter : ObjectWriter
     {
-        private XmlWriter _writer;
-        private InspectorStream _stream;
+        private readonly XmlWriter _writer;
+        private readonly InspectorStream _stream;
 
         public XmlObjectWriter(
             Stream stream)

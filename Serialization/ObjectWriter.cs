@@ -26,7 +26,7 @@ namespace HotChai.Serialization
     /// </summary>
     public abstract class ObjectWriter : IObjectWriter
     {
-        private Stack<ObjectWriterState> _state = new Stack<ObjectWriterState>();
+        private readonly Stack<ObjectWriterState> _state = new Stack<ObjectWriterState>();
 
         protected ObjectWriter()
         {

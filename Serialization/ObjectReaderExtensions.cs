@@ -26,7 +26,7 @@ namespace HotChai.Serialization
 
         public sealed class ObjectReaderExtension
         {
-            private IObjectReader _reader;
+            private readonly IObjectReader _reader;
 
             internal ObjectReaderExtension(
                 IObjectReader reader)
@@ -65,7 +65,7 @@ namespace HotChai.Serialization
 
         internal sealed class ObjectMemberCollection : IEnumerable<IObjectReader>, IEnumerator<IObjectReader>
         {
-            private IObjectReader _reader;
+            private readonly IObjectReader _reader;
 
             internal ObjectMemberCollection(
                 IObjectReader reader)
@@ -104,7 +104,7 @@ namespace HotChai.Serialization
 
             public bool MoveNext()
             {
-                if (this._reader.ReadNextMemberKey())
+                if (this._reader.MoveToNextMember())
                 {
                     return true;
                 }
@@ -127,7 +127,7 @@ namespace HotChai.Serialization
         internal abstract class ArrayValuesCollection<TValue>
             : IEnumerable<TValue>, IEnumerator<TValue>
         {
-            private IObjectReader _reader;
+            private readonly IObjectReader _reader;
 
             protected ArrayValuesCollection(
                 IObjectReader reader)
@@ -399,7 +399,7 @@ namespace HotChai.Serialization
 
         internal sealed class ArrayValuesAsStringCollection : ArrayValuesCollection<string>
         {
-            private int _itemQuota;
+            private readonly int _itemQuota;
 
             internal ArrayValuesAsStringCollection(
                 IObjectReader reader,

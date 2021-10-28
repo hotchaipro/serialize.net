@@ -24,8 +24,8 @@ namespace HotChai.Serialization.Bencoding
 {
     public sealed class BencodingObjectWriter : ObjectWriter
     {
-        private InspectorStream _stream;
-        private BinaryWriter _writer;
+        private readonly InspectorStream _stream;
+        private readonly BinaryWriter _writer;
 
         public BencodingObjectWriter(
             Stream stream)

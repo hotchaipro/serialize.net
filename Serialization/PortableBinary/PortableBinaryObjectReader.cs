@@ -26,11 +26,11 @@ namespace HotChai.Serialization.PortableBinary
     /// </summary>
     public sealed class PortableBinaryObjectReader : ObjectReader
     {
-        private InspectorStream _stream;
-        private BinaryReader _reader;
+        private readonly InspectorStream _stream;
+        private readonly BinaryReader _reader;
         private bool _peeked;
         private int _peekedValue;
-        private byte[] _skipBuffer = new byte[4096];
+        private readonly byte[] _skipBuffer = new byte[4096];
 
         /// <summary>
         /// Initializes a new instance of the <c>PortableBinaryObjectReader</c> 
