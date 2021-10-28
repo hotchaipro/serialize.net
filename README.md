@@ -12,7 +12,9 @@ Features
 
 * Supports a variety of serialization formats, including [JSON](http://json.org), [XML](http://en.wikipedia.org/wiki/XML), [Bencode](http://en.wikipedia.org/wiki/Bencode), and [PBON](http://pbon.info), with a single API.
 
-* Available as a Portable Class Library, so it can be used with Mono, Xamarin.iOS, and Xamarin.Android as a cross-platform solution.
+* Portable implementation supports all .NET runtimes including Mono, Xamarin.iOS, and Xamarin.Android.
+
+* Visual Studio Shared Project support for easy inclusion of source code in your project.
 
 * Supports transmitting objects between platforms (regardless of processor endianness, for example).
 
