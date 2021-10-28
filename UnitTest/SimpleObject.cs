@@ -376,7 +376,7 @@ namespace HotChai.Serialization.UnitTest
 
                 int memberKey;
 
-                while (reader.ReadNextMemberKey())
+                while (reader.MoveToNextMember())
                 {
                     memberKey = reader.MemberKey;
 

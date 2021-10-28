@@ -67,21 +67,14 @@ namespace HotChai.Serialization
             return this.State.ReadStartObject(this);
         }
 
-        /// <summary>
-        /// Reads the key of the next member of the serialized object.
-        /// </summary>
-        /// <returns>
-        /// <c>true</c> if the next member key was read, or <c>false</c> if the 
-        /// serialized object has no more members.
-        /// </returns>
-        // TODO: Deprecate this method in favor of MoveToNextMember().
+        [Obsolete("Use the MoveToNextMember method.")]
         public bool ReadNextMemberKey()
         {
             return this.State.MoveToNextObjectMember(this);
         }
 
         /// <summary>
-        /// Moves the reader to the next member of a serialized array.
+        /// Moves the reader to the next member of a serialized object.
         /// </summary>
         /// <returns>
         /// <c>true</c> if the reader moved to the next member; otherwise,

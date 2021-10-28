@@ -104,7 +104,7 @@ namespace HotChai.Serialization.UnitTest
 
             Person person = new Person();
 
-            while (reader.ReadNextMemberKey())
+            while (reader.MoveToNextMember())
             {
                 if (reader.MemberKey == 1)
                 {

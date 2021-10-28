@@ -41,12 +41,15 @@ namespace HotChai.Serialization
         bool ReadStartObject();
 
         /// <summary>
-        /// Reads the key of the next member of the serialized object.
+        /// Moves the reader to the next member of a serialized object.
         /// </summary>
         /// <returns>
-        /// <c>true</c> if the next member key was read, or <c>false</c> if the 
-        /// serialized object has no more members.
+        /// <c>true</c> if the reader moved to the next member; otherwise,
+        /// <c>false</c> if the last member was reached.
         /// </returns>
+        bool MoveToNextMember();
+
+        [Obsolete("Use the MoveToNextMember method.")]
         bool ReadNextMemberKey();
 
         /// <summary>
