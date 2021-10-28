@@ -65,7 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Serialization\HotChai.Serialization.csproj">
-      <Project>{7c91fb45-4022-4cc4-9d5d-9b882aa1dbf2}</Project>
+      <Project>{dc0a4342-dc3d-46e9-87f4-197d75e6d4b7}</Project>
       <Name>HotChai.Serialization</Name>
     </ProjectReference>
   </ItemGroup>

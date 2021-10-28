@@ -1,50 +1,25 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard1.0</TargetFramework>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="Bencoding\**" />
-    <Compile Remove="Json\**" />
-    <Compile Remove="PortableBinary\**" />
-    <Compile Remove="Xml\**" />
-    <EmbeddedResource Remove="Bencoding\**" />
-    <EmbeddedResource Remove="Json\**" />
-    <EmbeddedResource Remove="PortableBinary\**" />
-    <EmbeddedResource Remove="Xml\**" />
-    <None Remove="Bencoding\**" />
-    <None Remove="Json\**" />
-    <None Remove="PortableBinary\**" />
-    <None Remove="Xml\**" />
-  </ItemGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningsAsErrors />
+  </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="InspectorStream.cs" />
-    <Compile Remove="IObjectReader.cs" />
-    <Compile Remove="IObjectWriter.cs" />
-    <Compile Remove="ISerializationInspector.cs" />
-    <Compile Remove="MemberValueType.cs" />
-    <Compile Remove="ObjectReader.cs" />
-    <Compile Remove="ObjectReaderExtensions.cs" />
-    <Compile Remove="ObjectWriter.cs" />
-    <Compile Remove="ObjectWriterExtensions.cs" />
-    <Compile Remove="StateManager.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <None Remove="Bencoding\HotChai.Serialization.Bencoding.projitems" />
     <None Remove="HotChai.Serialization.Core.projitems" />
-    <None Remove="Serialize.Net.projitems" />
+    <None Remove="Json\HotChai.Serialization.Json.projitems" />
+    <None Remove="PortableBinary\HotChai.Serialization.PortableBinary.projitems" />
+    <None Remove="Xml\HotChai.Serialization.Xml.projitems" />
   </ItemGroup>
-
-  <Import Project="HotChai.Serialization.Core.projitems" Label="Shared" />
-
-  <Import Project="PortableBinary\HotChai.Serialization.PortableBinary.projitems" Label="Shared" />
-
-  <Import Project="Bencoding\HotChai.Serialization.Bencoding.projitems" Label="Shared" />
-
-  <Import Project="Json\HotChai.Serialization.Json.projitems" Label="Shared" />
-
-  <Import Project="Xml\HotChai.Serialization.Xml.projitems" Label="Shared" />
 
 </Project>
