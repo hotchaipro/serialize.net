@@ -2,6 +2,21 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.0</TargetFramework>
+    <Version>1.5.0</Version>
+    <Company>Hot Chai Productions</Company>
+    <Description>A cross-platform library for efficiently serializing basic .NET types. Supports JSON, XML, Bencode, and PBON formats on Windows, Xamarin iOS and Android platforms.</Description>
+    <Authors>David Taylor</Authors>
+    <Copyright>Copyright 2014-2021, Hot Chai Productions, LLC</Copyright>
+    <PackageLicenseFile>license.txt</PackageLicenseFile>
+    <RepositoryUrl>https://github.com/hotchaipro/serialize.net</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/hotchaipro/serialize.net</PackageProjectUrl>
+    <PackageReleaseNotes>* Add IObjectReader.MoveToNextMember for consistency with MoveToNextArrayValue
+* Deprecate IObjectReader.ReadNextMemberKey
+* Add JsonFormatOptions to JsonObjectWriter</PackageReleaseNotes>
+    <NeutralLanguage>en-us</NeutralLanguage>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>serializer pbon json xml bencode</PackageTags>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -20,6 +35,10 @@
     <None Remove="Json\HotChai.Serialization.Json.projitems" />
     <None Remove="PortableBinary\HotChai.Serialization.PortableBinary.projitems" />
     <None Remove="Xml\HotChai.Serialization.Xml.projitems" />
+    <None Include="..\license.txt">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
