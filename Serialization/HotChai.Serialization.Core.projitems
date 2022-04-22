@@ -4,22 +4,9 @@
     <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
     <HasSharedItems>true</HasSharedItems>
     <SharedGUID>b5442b31-a1b4-4400-9293-ad3bc4ece954</SharedGUID>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageLicenseUrl>https://github.com/hotchaipro/serialize.net/blob/master/license.txt</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/hotchaipro/serialize.net</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/hotchaipro/serialize.net</RepositoryUrl>
-    <PackageTags>serialize .NET PBON JSON XML Bencode</PackageTags>
-    <PackageReleaseNotes>Update JSON parser to allow whitespace.</PackageReleaseNotes>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
     <Import_RootNamespace>HotChai.Serialization.Core</Import_RootNamespace>
-    <Version>1.4.3</Version>
-    <Authors>David Taylor</Authors>
-    <Company>Hot Chai Productions, LLC</Company>
-    <Product>Hot Chai .NET Serialization Library</Product>
-    <Description>A cross-platform library for efficiently serializing basic .NET types. Supports JSON, XML, Bencode, and PBON formats on Windows, Xamarin iOS and Android platforms.</Description>
-    <Copyright>Copyright 2014-2018, David Taylor, Hot Chai Productions, LLC</Copyright>
-    <NeutralLanguage>English</NeutralLanguage>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)InspectorStream.cs" />
