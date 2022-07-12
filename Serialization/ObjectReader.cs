@@ -281,8 +281,7 @@ namespace HotChai.Serialization
             {
             }
 
-            public override bool ReadStartObject(
-                ObjectReader reader)
+            public override bool ReadStartObject(ObjectReader reader)
             {
                 if (reader.ReadStartObjectToken())
                 {
@@ -296,10 +295,36 @@ namespace HotChai.Serialization
                     return false;
                 }
             }
+            public override bool ReadStartArray(ObjectReader reader)
+            {
+                if (reader.ReadStartArrayToken())
+                {
+                    // Start of a new array
+                    reader.PushState(StartArrayState.State);
+                    return true;
+                }
+                else
+                {
+                    // No array (null)
+                    return false;
+                }
+            }
 
             public override void Skip(ObjectReader reader)
             {
-                ReadStartObject(reader);
+                MemberValueType type = reader.PeekValueType();
+                if (type == MemberValueType.Object)
+                {
+                    ReadStartObject(reader);
+                }
+                else if (type == MemberValueType.Array)
+                {
+                    ReadStartArray(reader);
+                }
+                else
+                {
+                    throw new NotSupportedException("Unsupported value type.");
+                }
             }
         }
 
