@@ -16,6 +16,7 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #endregion License
 using System;
+using System.Buffers.Binary;
 using System.IO;
 using System.Text;
 
@@ -342,32 +343,24 @@ namespace HotChai.Serialization.PortableBinary
         protected override void WritePrimitiveValue(
             float value)
         {
-            byte[] bytes = BitConverter.GetBytes(value);
-            if (BitConverter.IsLittleEndian)
-            {
-                // Convert to network order (big-endian)
-                Array.Reverse(bytes);
-            }
+            Span<byte> bytes = stackalloc byte[4];
+            BinaryPrimitives.TryWriteSingleBigEndian(bytes, value);
             WriteLength(bytes.Length);
             if (bytes.Length > 0)
             {
-                this._writer.Write(bytes, 0, bytes.Length);
+                this._writer.Write(bytes);
             }
         }
 
         protected override void WritePrimitiveValue(
             double value)
         {
-            byte[] bytes = BitConverter.GetBytes(value);
-            if (BitConverter.IsLittleEndian)
-            {
-                // Convert to network order (big-endian)
-                Array.Reverse(bytes);
-            }
+            Span<byte> bytes = stackalloc byte[8];
+            BinaryPrimitives.TryWriteDoubleBigEndian(bytes, value);
             WriteLength(bytes.Length);
             if (bytes.Length > 0)
             {
-                this._writer.Write(bytes, 0, bytes.Length);
+                this._writer.Write(bytes);
             }
         }
 
@@ -384,6 +377,23 @@ namespace HotChai.Serialization.PortableBinary
                 if (value.Length > 0)
                 {
                     this._writer.Write(value, 0, value.Length);
+                }
+            }
+        }
+
+        protected override void WritePrimitiveValue(
+            ReadOnlySpan<byte> value)
+        {
+            if (null == value)
+            {
+                WriteToken(PortableBinaryToken.NullValueToken);
+            }
+            else
+            {
+                WriteLength(value.Length);
+                if (value.Length > 0)
+                {
+                    this._writer.Write(value);
                 }
             }
         }

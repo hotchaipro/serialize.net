@@ -197,6 +197,18 @@ namespace HotChai.Serialization
         }
 
         /// <summary>
+        /// Writes <c>ReadOnlySpan<Byte></c> serialized value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        public void WriteValue(
+            ReadOnlySpan<byte> value)
+        {
+            this.State.WritePrimitiveValue(this);
+
+            this.WritePrimitiveValue(value);
+        }
+
+        /// <summary>
         /// Writes a <c>String</c> serialized value.
         /// </summary>
         /// <param name="value">The value.</param>
@@ -541,6 +553,9 @@ namespace HotChai.Serialization
 
         protected abstract void WritePrimitiveValue(
             byte[] value);
+
+        protected abstract void WritePrimitiveValue(
+            ReadOnlySpan<byte> value);
 
         protected abstract void WritePrimitiveValue(
             string value);

@@ -148,6 +148,36 @@ namespace HotChai.Serialization
         public static void WriteMember(
             this IObjectWriter writer,
             int key,
+            ReadOnlySpan<byte> value)
+        {
+            if (null == writer)
+            {
+                throw new ArgumentNullException("writer");
+            }
+
+            writer.WriteStartMember(key);
+            writer.WriteValue(value);
+            writer.WriteEndMember();
+        }
+
+        public static void WriteMember(
+            this IObjectWriter writer,
+            int key,
+            ReadOnlyMemory<byte> value)
+        {
+            if (null == writer)
+            {
+                throw new ArgumentNullException("writer");
+            }
+
+            writer.WriteStartMember(key);
+            writer.WriteValue(value.Span);
+            writer.WriteEndMember();
+        }
+
+        public static void WriteMember(
+            this IObjectWriter writer,
+            int key,
             string value)
         {
             if (null == writer)

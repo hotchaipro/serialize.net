@@ -161,6 +161,22 @@ namespace HotChai.Serialization.Bencoding
             this._writer.Write(value);
         }
 
+        protected override void WritePrimitiveValue(ReadOnlySpan<byte> value)
+        {
+            if (value == null)
+            {
+                WritePrimitiveNullValue();
+                return;
+            }
+
+            // Length prefix
+            WriteRaw(value.Length.ToString(CultureInfo.InvariantCulture));
+            this._writer.Write(BencodingToken.LengthDelimiter);
+
+            // Byte string
+            this._writer.Write(value);
+        }
+
         protected override void WritePrimitiveValue(string value)
         {
             if (value == null)

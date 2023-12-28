@@ -159,6 +159,21 @@ namespace HotChai.Serialization.Xml
             this._writer.WriteEndElement();
         }
 
+        protected override void WritePrimitiveValue(ReadOnlySpan<byte> value)
+        {
+            if (null == value)
+            {
+                WritePrimitiveNullValue();
+                return;
+            }
+
+            this._writer.WriteStartElement(XmlToken.ValueElement);
+            // TODO: Efficient Base64 stream encoding directly to writer
+            string encodedString = Convert.ToBase64String(value);
+            this._writer.WriteString(encodedString);
+            this._writer.WriteEndElement();
+        }
+
         protected override void WritePrimitiveValue(string value)
         {
             if (null == value)

@@ -111,6 +111,12 @@ namespace HotChai.Serialization
         void WriteValue(Byte[] value);
 
         /// <summary>
+        /// Writes a <c>ReadOnlySpan<Byte></c> serialized value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        void WriteValue(ReadOnlySpan<Byte> value);
+
+        /// <summary>
         /// Writes a <c>String</c> serialized value.
         /// </summary>
         /// <param name="value">The value.</param>

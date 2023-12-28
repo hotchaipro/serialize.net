@@ -178,6 +178,24 @@ namespace HotChai.Serialization.Json
         }
 
         protected override void WritePrimitiveValue(
+            ReadOnlySpan<byte> value)
+        {
+            if (null == value)
+            {
+                WritePrimitiveNullValue();
+            }
+            else
+            {
+                // TODO: Efficient Base64 stream encoding directly to BinaryWriter
+                string encodedString = Convert.ToBase64String(value);
+
+                Write('"');
+                Write(encodedString);
+                Write('"');
+            }
+        }
+
+        protected override void WritePrimitiveValue(
             string value)
         {
             if (null == value)

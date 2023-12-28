@@ -16,6 +16,7 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #endregion License
 using System;
+using System.Buffers.Binary;
 using System.IO;
 using System.Text;
 
@@ -30,7 +31,7 @@ namespace HotChai.Serialization.PortableBinary
         private readonly BinaryReader _reader;
         private bool _peeked;
         private int _peekedValue;
-        private readonly byte[] _skipBuffer = new byte[4096];
+        private byte[] _skipBuffer;
 
         /// <summary>
         /// Initializes a new instance of the <c>PortableBinaryObjectReader</c> 
@@ -308,13 +309,9 @@ namespace HotChai.Serialization.PortableBinary
         protected override float ReadPrimitiveValueAsSingle()
         {
             int length = ReadPrimitiveLength(4);
-            byte[] bytes = this._reader.ReadBytes(length);
-            if (BitConverter.IsLittleEndian)
-            {
-                // Convert from network order (big-endian)
-                Array.Reverse(bytes);
-            }
-            return BitConverter.ToSingle(bytes, 0);
+            Span<byte> buffer = stackalloc byte[length];
+            this._reader.Read(buffer);
+            return BinaryPrimitives.ReadSingleBigEndian(buffer);
         }
 
         /// <summary>
@@ -324,13 +321,9 @@ namespace HotChai.Serialization.PortableBinary
         protected override double ReadPrimitiveValueAsDouble()
         {
             int length = ReadPrimitiveLength(8);
-            byte[] bytes = this._reader.ReadBytes(length);
-            if (BitConverter.IsLittleEndian)
-            {
-                // Convert from network order (big-endian)
-                Array.Reverse(bytes);
-            }
-            return BitConverter.ToDouble(bytes, 0);
+            Span<byte> buffer = stackalloc byte[length];
+            this._reader.Read(buffer);
+            return BinaryPrimitives.ReadDoubleBigEndian(buffer);
         }
 
         /// <summary>
@@ -434,6 +427,12 @@ namespace HotChai.Serialization.PortableBinary
             if (count < 0)
             {
                 throw new ArgumentOutOfRangeException("count", "Count must be a non-negative integer.");
+            }
+
+            if (this._skipBuffer is null)
+            {
+                // TODO: Pooled buffer
+                this._skipBuffer = new byte[4096];
             }
 
             int bytesRead;

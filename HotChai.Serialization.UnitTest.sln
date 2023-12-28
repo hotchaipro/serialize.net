@@ -1,0 +1,47 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34310.174
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTest", "UnitTest\UnitTest.csproj", "{50C3FDC3-D5C0-4AB3-8F14-31D7020419A7}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "HotChai.Serialization.Core", "Serialization\HotChai.Serialization.Core.shproj", "{B5442B31-A1B4-4400-9293-AD3BC4ECE954}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "HotChai.Serialization.PortableBinary", "Serialization\PortableBinary\HotChai.Serialization.PortableBinary.shproj", "{0D9D7C29-0A01-4C48-BD71-1E85EB86E233}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "HotChai.Serialization.Xml", "Serialization\Xml\HotChai.Serialization.Xml.shproj", "{C54CD91D-18DC-41C1-A1C1-D3ADBAB9C0F7}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "HotChai.Serialization.Json", "Serialization\Json\HotChai.Serialization.Json.shproj", "{937000FA-A0D3-45F7-B9AE-CD8303A9A981}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "HotChai.Serialization.Bencoding", "Serialization\Bencoding\HotChai.Serialization.Bencoding.shproj", "{CE1E0FB1-AE3C-4771-8DBD-BA05DFE3B870}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{50C3FDC3-D5C0-4AB3-8F14-31D7020419A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50C3FDC3-D5C0-4AB3-8F14-31D7020419A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50C3FDC3-D5C0-4AB3-8F14-31D7020419A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50C3FDC3-D5C0-4AB3-8F14-31D7020419A7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D16901C3-3713-4736-BF4E-3BFD3C367125}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Serialization\PortableBinary\HotChai.Serialization.PortableBinary.projitems*{0d9d7c29-0a01-4c48-bd71-1e85eb86e233}*SharedItemsImports = 13
+		Serialization\Bencoding\HotChai.Serialization.Bencoding.projitems*{50c3fdc3-d5c0-4ab3-8f14-31d7020419a7}*SharedItemsImports = 5
+		Serialization\HotChai.Serialization.Core.projitems*{50c3fdc3-d5c0-4ab3-8f14-31d7020419a7}*SharedItemsImports = 5
+		Serialization\Json\HotChai.Serialization.Json.projitems*{50c3fdc3-d5c0-4ab3-8f14-31d7020419a7}*SharedItemsImports = 5
+		Serialization\PortableBinary\HotChai.Serialization.PortableBinary.projitems*{50c3fdc3-d5c0-4ab3-8f14-31d7020419a7}*SharedItemsImports = 5
+		Serialization\Xml\HotChai.Serialization.Xml.projitems*{50c3fdc3-d5c0-4ab3-8f14-31d7020419a7}*SharedItemsImports = 5
+		Serialization\Json\HotChai.Serialization.Json.projitems*{937000fa-a0d3-45f7-b9ae-cd8303a9a981}*SharedItemsImports = 13
+		Serialization\HotChai.Serialization.Core.projitems*{b5442b31-a1b4-4400-9293-ad3bc4ece954}*SharedItemsImports = 13
+		Serialization\Xml\HotChai.Serialization.Xml.projitems*{c54cd91d-18dc-41c1-a1c1-d3adbab9c0f7}*SharedItemsImports = 13
+		Serialization\Bencoding\HotChai.Serialization.Bencoding.projitems*{ce1e0fb1-ae3c-4771-8dbd-ba05dfe3b870}*SharedItemsImports = 13
+	EndGlobalSection
+EndGlobal
