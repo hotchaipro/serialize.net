@@ -16,7 +16,9 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #endregion License
 using System;
+#if NET5_0_OR_GREATER
 using System.Buffers.Binary;
+#endif
 using System.IO;
 using System.Text;
 
@@ -340,6 +342,7 @@ namespace HotChai.Serialization.PortableBinary
             }
         }
 
+#if NET5_0_OR_GREATER
         protected override void WritePrimitiveValue(
             float value)
         {
@@ -363,6 +366,39 @@ namespace HotChai.Serialization.PortableBinary
                 this._writer.Write(bytes);
             }
         }
+#else
+        protected override void WritePrimitiveValue(
+            float value)
+        {
+            byte[] bytes = BitConverter.GetBytes(value);
+            if (BitConverter.IsLittleEndian)
+            {
+                // Convert to network order (big-endian)
+                Array.Reverse(bytes);
+            }
+            WriteLength(bytes.Length);
+            if (bytes.Length > 0)
+            {
+                this._writer.Write(bytes, 0, bytes.Length);
+            }
+        }
+
+        protected override void WritePrimitiveValue(
+            double value)
+        {
+            byte[] bytes = BitConverter.GetBytes(value);
+            if (BitConverter.IsLittleEndian)
+            {
+                // Convert to network order (big-endian)
+                Array.Reverse(bytes);
+            }
+            WriteLength(bytes.Length);
+            if (bytes.Length > 0)
+            {
+                this._writer.Write(bytes, 0, bytes.Length);
+            }
+        }
+#endif
 
         protected override void WritePrimitiveValue(
             byte[] value)
@@ -381,6 +417,7 @@ namespace HotChai.Serialization.PortableBinary
             }
         }
 
+#if NET5_0_OR_GREATER
         protected override void WritePrimitiveValue(
             ReadOnlySpan<byte> value)
         {
@@ -397,6 +434,7 @@ namespace HotChai.Serialization.PortableBinary
                 }
             }
         }
+#endif
 
         protected override void WritePrimitiveValue(
             string value)

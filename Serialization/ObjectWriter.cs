@@ -196,6 +196,7 @@ namespace HotChai.Serialization
             this.WritePrimitiveValue(value);
         }
 
+#if NET5_0_OR_GREATER
         /// <summary>
         /// Writes <c>ReadOnlySpan<Byte></c> serialized value.
         /// </summary>
@@ -207,6 +208,7 @@ namespace HotChai.Serialization
 
             this.WritePrimitiveValue(value);
         }
+#endif
 
         /// <summary>
         /// Writes a <c>String</c> serialized value.
@@ -554,8 +556,10 @@ namespace HotChai.Serialization
         protected abstract void WritePrimitiveValue(
             byte[] value);
 
+#if NET5_0_OR_GREATER
         protected abstract void WritePrimitiveValue(
             ReadOnlySpan<byte> value);
+#endif
 
         protected abstract void WritePrimitiveValue(
             string value);

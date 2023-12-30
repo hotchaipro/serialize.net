@@ -16,7 +16,9 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #endregion License
 using System;
+#if NET5_0_OR_GREATER
 using System.Buffers.Binary;
+#endif
 using System.IO;
 using System.Text;
 
@@ -302,6 +304,7 @@ namespace HotChai.Serialization.PortableBinary
             return value;
         }
 
+#if NET5_0_OR_GREATER
         /// <summary>
         /// Reads the current value as a <c>Single</c> type.
         /// </summary>
@@ -325,6 +328,39 @@ namespace HotChai.Serialization.PortableBinary
             this._reader.Read(buffer);
             return BinaryPrimitives.ReadDoubleBigEndian(buffer);
         }
+#else
+        /// <summary>
+        /// Reads the current value as a <c>Single</c> type.
+        /// </summary>
+        /// <returns>The <c>Single</c> value.</returns>
+        protected override float ReadPrimitiveValueAsSingle()
+        {
+            int length = ReadPrimitiveLength(4);
+            byte[] bytes = this._reader.ReadBytes(length);
+            if (BitConverter.IsLittleEndian)
+            {
+                // Convert from network order (big-endian)
+                Array.Reverse(bytes);
+            }
+            return BitConverter.ToSingle(bytes, 0);
+        }
+
+        /// <summary>
+        /// Reads the current value as a <c>Double</c> type.
+        /// </summary>
+        /// <returns>The <c>Double</c> value.</returns>
+        protected override double ReadPrimitiveValueAsDouble()
+        {
+            int length = ReadPrimitiveLength(8);
+            byte[] bytes = this._reader.ReadBytes(length);
+            if (BitConverter.IsLittleEndian)
+            {
+                // Convert from network order (big-endian)
+                Array.Reverse(bytes);
+            }
+            return BitConverter.ToDouble(bytes, 0);
+        }
+#endif
 
         /// <summary>
         /// Reads the current value as an array of <c>Byte</c> type.

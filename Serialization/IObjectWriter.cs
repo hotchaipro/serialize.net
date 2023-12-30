@@ -110,11 +110,13 @@ namespace HotChai.Serialization
         /// <param name="value">The value.</param>
         void WriteValue(Byte[] value);
 
+#if NET5_0_OR_GREATER
         /// <summary>
         /// Writes a <c>ReadOnlySpan<Byte></c> serialized value.
         /// </summary>
         /// <param name="value">The value.</param>
         void WriteValue(ReadOnlySpan<Byte> value);
+#endif
 
         /// <summary>
         /// Writes a <c>String</c> serialized value.

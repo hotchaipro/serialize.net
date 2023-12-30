@@ -145,6 +145,7 @@ namespace HotChai.Serialization
             writer.WriteEndMember();
         }
 
+#if NET5_0_OR_GREATER
         public static void WriteMember(
             this IObjectWriter writer,
             int key,
@@ -174,6 +175,7 @@ namespace HotChai.Serialization
             writer.WriteValue(value.Span);
             writer.WriteEndMember();
         }
+#endif
 
         public static void WriteMember(
             this IObjectWriter writer,
@@ -190,7 +192,7 @@ namespace HotChai.Serialization
             writer.WriteEndMember();
         }
 
-        #endregion Member writers
+#endregion Member writers
 
         #region Member array writers
 
