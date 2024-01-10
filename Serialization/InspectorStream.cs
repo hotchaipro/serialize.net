@@ -24,6 +24,7 @@ namespace HotChai.Serialization
     {
         private readonly Stream _innerStream;
         private ISerializationInspector _inspector;
+        private readonly byte[] _oneByteBuffer = new byte[1];
 
         public InspectorStream(
             Stream stream)
@@ -90,14 +91,25 @@ namespace HotChai.Serialization
         public override int Read(byte[] buffer, int offset, int count)
         {
             int bytesRead = this._innerStream.Read(buffer, offset, count);
-
-            ISerializationInspector inspector = this._inspector;
-            if ((null != inspector) && (bytesRead > 0))
+            if (bytesRead > 0)
             {
-                inspector.AddContent(buffer, offset, bytesRead);
+                this._inspector?.AddContent(buffer, offset, bytesRead);
             }
 
             return bytesRead;
+        }
+
+        public override int ReadByte()
+        {
+            int bytesRead = this._innerStream.Read(this._oneByteBuffer, 0, 1);
+            if (bytesRead == 0)
+            {
+                return -1;
+            }
+
+            this._inspector?.AddContent(this._oneByteBuffer, 0, bytesRead);
+
+            return this._oneByteBuffer[0];
         }
 
         public override long Seek(long offset, SeekOrigin origin)
@@ -114,11 +126,7 @@ namespace HotChai.Serialization
         {
             this._innerStream.Write(buffer, offset, count);
 
-            ISerializationInspector inspector = this._inspector;
-            if (null != inspector)
-            {
-                inspector.AddContent(buffer, offset, count);
-            }
+            this._inspector?.AddContent(buffer, offset, count);
         }
     }
 }
