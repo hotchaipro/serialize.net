@@ -57,7 +57,7 @@ namespace HotChai.Serialization
 
         public override bool CanSeek
         {
-            get { return false; }
+            get { return this._innerStream.CanSeek; }
         }
 
         public override bool CanWrite
@@ -114,7 +114,7 @@ namespace HotChai.Serialization
 
         public override long Seek(long offset, SeekOrigin origin)
         {
-            throw new NotSupportedException();
+            return this._innerStream.Seek(offset, origin);
         }
 
         public override void SetLength(long value)

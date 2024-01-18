@@ -465,24 +465,31 @@ namespace HotChai.Serialization.PortableBinary
                 throw new ArgumentOutOfRangeException("count", "Count must be a non-negative integer.");
             }
 
-            if (this._skipBuffer is null)
+            if (this._stream.CanSeek)
             {
-                // TODO: Pooled buffer
-                this._skipBuffer = new byte[4096];
+                this._stream.Seek(count, SeekOrigin.Current);
             }
-
-            int bytesRead;
-
-            while (count > 0)
+            else
             {
-                bytesRead = this._stream.Read(this._skipBuffer, 0, count > this._skipBuffer.Length ? this._skipBuffer.Length : count);
-                if (0 == bytesRead)
+                if (this._skipBuffer is null)
                 {
-                    // End of stream
-                    return false;
+                    // TODO: Pooled buffer
+                    this._skipBuffer = new byte[4096];
                 }
 
-                count -= bytesRead;
+                int bytesRead;
+
+                while (count > 0)
+                {
+                    bytesRead = this._stream.Read(this._skipBuffer, 0, count > this._skipBuffer.Length ? this._skipBuffer.Length : count);
+                    if (0 == bytesRead)
+                    {
+                        // End of stream
+                        return false;
+                    }
+
+                    count -= bytesRead;
+                }
             }
 
             return true;
