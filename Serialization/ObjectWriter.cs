@@ -198,7 +198,7 @@ namespace HotChai.Serialization
 
 #if NET5_0_OR_GREATER
         /// <summary>
-        /// Writes <c>ReadOnlySpan<Byte></c> serialized value.
+        /// Writes <c>ReadOnlySpan&lt;Byte&gt;</c> serialized value.
         /// </summary>
         /// <param name="value">The value.</param>
         public void WriteValue(
