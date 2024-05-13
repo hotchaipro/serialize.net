@@ -57,7 +57,7 @@ namespace HotChai.Serialization
 
         public override bool CanSeek
         {
-            get { return this._innerStream.CanSeek; }
+            get { return (this._inspector is null) && (this._innerStream.CanSeek); }
         }
 
         public override bool CanWrite
@@ -114,6 +114,13 @@ namespace HotChai.Serialization
 
         public override long Seek(long offset, SeekOrigin origin)
         {
+            if (!(this._inspector is null))
+            {
+                // NOTE: Skipped stream contents must be read and passed to the 
+                // inspector for digital signature scenarios.
+                throw new NotSupportedException();
+            }
+
             return this._innerStream.Seek(offset, origin);
         }
 
