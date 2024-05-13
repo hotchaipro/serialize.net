@@ -31,14 +31,13 @@ namespace HotChai.Serialization.PortableBinary
     public sealed class PortableBinaryObjectReader : ObjectReader
     {
 #if NET5_0_OR_GREATER
-        private static readonly ArrayPool<byte> _SkipBufferPool = ArrayPool<byte>.Shared;
+        private static readonly ArrayPool<byte> _BufferPool = ArrayPool<byte>.Shared;
 #else
         private byte[] _skipBuffer;
 #endif
+        private readonly byte[] _oneByteBuffer = new byte[1];
 
         private readonly InspectorStream _stream;
-        // CONSIDER: Remove dependency on BinaryReader and its IDisposable requirement.
-        private readonly BinaryReader _reader;
         private bool _peeked;
         private int _peekedValue;
 
@@ -56,11 +55,6 @@ namespace HotChai.Serialization.PortableBinary
             }
 
             this._stream = new InspectorStream(stream);
-#if NET5_0_OR_GREATER
-            this._reader = new BinaryReader(this._stream, Encoding.UTF8, leaveOpen: true);
-#else
-            this._reader = new BinaryReader(this._stream);
-#endif
         }
 
         public override ISerializationInspector Inspector
@@ -227,7 +221,7 @@ namespace HotChai.Serialization.PortableBinary
 
             // First byte contains sign flag
             bool negative = false;
-            value = this._reader.ReadByte();
+            value = this.ReadByte();
             if (0x80 == (value & 0x80))
             {
                 negative = true;
@@ -237,7 +231,7 @@ namespace HotChai.Serialization.PortableBinary
             // Read remainder of bytes in base 256
             for (int i = 1; i < length; ++i)
             {
-                value = (value * 256) + this._reader.ReadByte();
+                value = (value * 256) + this.ReadByte();
             }
 
             if (negative)
@@ -259,7 +253,7 @@ namespace HotChai.Serialization.PortableBinary
             int length = ReadPrimitiveLength(4);
             for (int i = 0; i < length; ++i)
             {
-                value = (value * 256) + this._reader.ReadByte();
+                value = (value * 256) + this.ReadByte();
             }
 
             return value;
@@ -277,7 +271,7 @@ namespace HotChai.Serialization.PortableBinary
 
             // First byte contains sign flag
             bool negative = false;
-            value = this._reader.ReadByte();
+            value = this.ReadByte();
             if (0x80 == (value & 0x80))
             {
                 negative = true;
@@ -287,7 +281,7 @@ namespace HotChai.Serialization.PortableBinary
             // Read remainder of bytes in base 256
             for (int i = 1; i < length; ++i)
             {
-                value = (value * 256) + this._reader.ReadByte();
+                value = (value * 256) + this.ReadByte();
             }
 
             if (negative)
@@ -309,7 +303,7 @@ namespace HotChai.Serialization.PortableBinary
             int length = ReadPrimitiveLength(8);
             for (int i = 0; i < length; ++i)
             {
-                value = (value * 256) + this._reader.ReadByte();
+                value = (value * 256) + this.ReadByte();
             }
 
             return value;
@@ -324,7 +318,7 @@ namespace HotChai.Serialization.PortableBinary
         {
             int length = ReadPrimitiveLength(4);
             Span<byte> buffer = stackalloc byte[length];
-            this._reader.Read(buffer);
+            this._stream.Read(buffer);
             return BinaryPrimitives.ReadSingleBigEndian(buffer);
         }
 
@@ -336,7 +330,7 @@ namespace HotChai.Serialization.PortableBinary
         {
             int length = ReadPrimitiveLength(8);
             Span<byte> buffer = stackalloc byte[length];
-            this._reader.Read(buffer);
+            this._stream.Read(buffer);
             return BinaryPrimitives.ReadDoubleBigEndian(buffer);
         }
 #else
@@ -347,7 +341,8 @@ namespace HotChai.Serialization.PortableBinary
         protected override float ReadPrimitiveValueAsSingle()
         {
             int length = ReadPrimitiveLength(4);
-            byte[] bytes = this._reader.ReadBytes(length);
+            var bytes = new byte[length];
+            this.ReadExactly(bytes, 0, length);
             if (BitConverter.IsLittleEndian)
             {
                 // Convert from network order (big-endian)
@@ -363,7 +358,8 @@ namespace HotChai.Serialization.PortableBinary
         protected override double ReadPrimitiveValueAsDouble()
         {
             int length = ReadPrimitiveLength(8);
-            byte[] bytes = this._reader.ReadBytes(length);
+            var bytes = new byte[length];
+            this.ReadExactly(bytes, 0, length);
             if (BitConverter.IsLittleEndian)
             {
                 // Convert from network order (big-endian)
@@ -386,7 +382,11 @@ namespace HotChai.Serialization.PortableBinary
                 return null;
             }
 
-            return this._reader.ReadBytes(length);
+            var bytes = new byte[length];
+
+            this.ReadExactly(bytes, 0, length);
+
+            return bytes;
         }
 
         /// <summary>
@@ -402,8 +402,27 @@ namespace HotChai.Serialization.PortableBinary
                 return null;
             }
 
-            byte[] bytes = this._reader.ReadBytes(length);
-            return Encoding.UTF8.GetString(bytes, 0, bytes.Length);
+            string value;
+
+#if NET5_0_OR_GREATER
+            var buffer = _BufferPool.Rent(length);
+            try
+#else
+            var buffer = new byte[length];
+#endif
+            {
+                this.ReadExactly(buffer, 0, length);
+
+                value = Encoding.UTF8.GetString(buffer, 0, length);
+            }
+#if NET5_0_OR_GREATER
+            finally
+            {
+                _BufferPool.Return(buffer);
+            }
+#endif
+
+            return value;
         }
 
         /// <summary>
@@ -484,7 +503,7 @@ namespace HotChai.Serialization.PortableBinary
             {
                 byte[] skipBuffer;
 #if NET5_0_OR_GREATER
-                skipBuffer = _SkipBufferPool.Rent(4096);
+                skipBuffer = _BufferPool.Rent(4096);
                 try
 #else
                 if (this._skipBuffer is null)
@@ -512,7 +531,7 @@ namespace HotChai.Serialization.PortableBinary
 #if NET5_0_OR_GREATER
                 finally
                 {
-                    _SkipBufferPool.Return(skipBuffer);
+                    _BufferPool.Return(skipBuffer);
                 }
 #endif
             }
@@ -590,7 +609,7 @@ namespace HotChai.Serialization.PortableBinary
             }
 
             // Read the first byte
-            int readByte = this._reader.ReadByte();
+            int readByte = this.ReadByte();
             if (readByte == -1)
             {
                 throw new InvalidOperationException();
@@ -611,7 +630,7 @@ namespace HotChai.Serialization.PortableBinary
             while ((byteValue & 0x80) != 0)
             {
                 // Read the next byte
-                readByte = this._reader.ReadByte();
+                readByte = this.ReadByte();
                 if (readByte == -1)
                 {
                     throw new InvalidOperationException();
@@ -629,6 +648,36 @@ namespace HotChai.Serialization.PortableBinary
             }
 
             return value;
+        }
+
+        [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
+        private byte ReadByte()
+        {
+            int bytesRead = this._stream.Read(this._oneByteBuffer, 0, 1);
+            if (bytesRead == 0)
+            {
+                throw new EndOfStreamException();
+            }
+
+            return this._oneByteBuffer[0];
+        }
+
+        private void ReadExactly(
+            byte[] buffer,
+            int offset,
+            int count)
+        {
+            while (count > 0)
+            {
+                int read = this._stream.Read(buffer, offset, count);
+                if (read == 0)
+                {
+                    throw new EndOfStreamException();
+                }
+
+                offset += read;
+                count -= read;
+            }
         }
     }
 }
