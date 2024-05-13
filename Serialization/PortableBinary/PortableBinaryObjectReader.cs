@@ -17,6 +17,7 @@
 #endregion License
 using System;
 #if NET5_0_OR_GREATER
+using System.Buffers;
 using System.Buffers.Binary;
 #endif
 using System.IO;
@@ -29,11 +30,17 @@ namespace HotChai.Serialization.PortableBinary
     /// </summary>
     public sealed class PortableBinaryObjectReader : ObjectReader
     {
+#if NET5_0_OR_GREATER
+        private static readonly ArrayPool<byte> _SkipBufferPool = ArrayPool<byte>.Shared;
+#else
+        private byte[] _skipBuffer;
+#endif
+
         private readonly InspectorStream _stream;
+        // CONSIDER: Remove dependency on BinaryReader and its IDisposable requirement.
         private readonly BinaryReader _reader;
         private bool _peeked;
         private int _peekedValue;
-        private byte[] _skipBuffer;
 
         /// <summary>
         /// Initializes a new instance of the <c>PortableBinaryObjectReader</c> 
@@ -49,7 +56,11 @@ namespace HotChai.Serialization.PortableBinary
             }
 
             this._stream = new InspectorStream(stream);
+#if NET5_0_OR_GREATER
+            this._reader = new BinaryReader(this._stream, Encoding.UTF8, leaveOpen: true);
+#else
             this._reader = new BinaryReader(this._stream);
+#endif
         }
 
         public override ISerializationInspector Inspector
@@ -94,7 +105,7 @@ namespace HotChai.Serialization.PortableBinary
         /// </summary>
         /// <returns>
         /// <c>true</c> if the member key was read, or <c>false</c> if the 
-        /// end of the seralized object was encountered.
+        /// end of the serialized object was encountered.
         /// </returns>
         protected override bool ReadNextObjectMemberKey()
         {
@@ -471,25 +482,39 @@ namespace HotChai.Serialization.PortableBinary
             }
             else
             {
+                byte[] skipBuffer;
+#if NET5_0_OR_GREATER
+                skipBuffer = _SkipBufferPool.Rent(4096);
+                try
+#else
                 if (this._skipBuffer is null)
                 {
-                    // TODO: Pooled buffer
                     this._skipBuffer = new byte[4096];
                 }
 
-                int bytesRead;
-
-                while (count > 0)
+                skipBuffer = this._skipBuffer;
+#endif
                 {
-                    bytesRead = this._stream.Read(this._skipBuffer, 0, count > this._skipBuffer.Length ? this._skipBuffer.Length : count);
-                    if (0 == bytesRead)
-                    {
-                        // End of stream
-                        return false;
-                    }
+                    int bytesRead;
 
-                    count -= bytesRead;
+                    while (count > 0)
+                    {
+                        bytesRead = this._stream.Read(skipBuffer, 0, count > skipBuffer.Length ? skipBuffer.Length : count);
+                        if (0 == bytesRead)
+                        {
+                            // End of stream
+                            return false;
+                        }
+
+                        count -= bytesRead;
+                    }
                 }
+#if NET5_0_OR_GREATER
+                finally
+                {
+                    _SkipBufferPool.Return(skipBuffer);
+                }
+#endif
             }
 
             return true;
