@@ -318,7 +318,7 @@ namespace HotChai.Serialization.PortableBinary
         {
             int length = ReadPrimitiveLength(4);
             Span<byte> buffer = stackalloc byte[length];
-            this._stream.Read(buffer);
+            this._stream.ReadExactly(buffer);
             return BinaryPrimitives.ReadSingleBigEndian(buffer);
         }
 
@@ -330,7 +330,7 @@ namespace HotChai.Serialization.PortableBinary
         {
             int length = ReadPrimitiveLength(8);
             Span<byte> buffer = stackalloc byte[length];
-            this._stream.Read(buffer);
+            this._stream.ReadExactly(buffer);
             return BinaryPrimitives.ReadDoubleBigEndian(buffer);
         }
 #else
