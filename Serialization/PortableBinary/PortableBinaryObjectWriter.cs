@@ -421,17 +421,10 @@ namespace HotChai.Serialization.PortableBinary
         protected override void WritePrimitiveValue(
             ReadOnlySpan<byte> value)
         {
-            if (null == value)
+            WriteLength(value.Length);
+            if (value.Length > 0)
             {
-                WriteToken(PortableBinaryToken.NullValueToken);
-            }
-            else
-            {
-                WriteLength(value.Length);
-                if (value.Length > 0)
-                {
-                    this._writer.Write(value);
-                }
+                this._writer.Write(value);
             }
         }
 #endif
